@@ -6,7 +6,7 @@ variable "role_name" {
 variable "github_repo" {
   description = "GitHub repo in format org/repo (for OIDC condition)"
   type        = string
-  default = "redLUIT/redLUIT_Nov2025_AWSBedRockProject02"
+  default     = "redLUIT/redLUIT_Nov2025_AWSBedRockProject02"
 }
 
 variable "region" {

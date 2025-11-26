@@ -17,8 +17,8 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
   # Allow bucket policy to grant public read
   block_public_acls       = false
   ignore_public_acls      = false
-  block_public_policy     = false  # must allow policies
-  restrict_public_buckets = false  # allow bucket policy
+  block_public_policy     = false # must allow policies
+  restrict_public_buckets = false # allow bucket policy
 }
 
 resource "aws_s3_bucket_policy" "public_read_policy" {

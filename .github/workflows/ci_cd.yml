@@ -45,6 +45,10 @@ jobs:
       - name: Install pre-commit
         run: pip install pre-commit
 
+      - name: Configure Credentials for pre-commit (if needed)
+        run: |
+          pre-commit set-git-credentials https://${{ secrets.GITHUB_TOKEN }}@github.com
+
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
 
