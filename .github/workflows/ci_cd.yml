@@ -12,37 +12,48 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+  id-token: write  # if using OIDC / AWS role assumption
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      AWS_ROLE_ARN: ${{ secrets.GITHUB_AWS_ROLE_ARN }}   # from terraform output
       AWS_REGION: ${{ secrets.AWS_REGION }}
       BUCKET_NAME: ${{ secrets.RESUME_BUCKET }}
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      # If using access keys instead of role:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # (Optionally) AWS_ACCOUNT_ID if needed in script
+
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: aws-actions/configure-aws-credentials@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          # Use default GITHUB_TOKEN — this allows git operations in workflow
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # fetch full history (useful if pre‑commit or git operations need tags/branches)
 
-      - name: Set up Python
+      - name: Setup git auth for pre-commit (if needed)
+        run: |
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Set up Python (for pre-commit + script)
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      - name: Configure git so pre‑commit can fetch hook repos
-        run: |
-          git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+      - name: Install pre-commit
+        run: pip install pre-commit
 
       - name: Run pre-commit hooks
-        uses: pre-commit/action@v3.0.1
+        run: pre-commit run --all-files
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          # If you're using role assumption, uncomment below and set AWS_ROLE_ARN secret
+          # role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
 
       - name: Install dependencies
         run: |
