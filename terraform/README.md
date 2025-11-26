@@ -1,4 +1,6 @@
-.
+## redLUIT_Nov2025_AWSBedRockProject02
+ATS friendly resume with AWS bedrock
+
 ├── terraform/          ← root Terraform module  
 │     ├── backend.tf      ← remote state config  
 │     ├── environments/   ← environment-specific configs (beta, prod)  
