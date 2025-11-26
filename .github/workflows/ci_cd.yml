@@ -37,6 +37,10 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Configure git so pre‑commit can fetch hook repos
+        run: |
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
       - name: Run pre-commit hooks
         uses: pre-commit/action@v3.0.1
 

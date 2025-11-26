@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket         = "captains-bucket01312025"   # Using the bucket name from variables.tf
+    bucket         = "ec2-shutdown-lambda-bucket"   # Using the bucket name from variables.tf
     key            = "bedrock-project02/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
