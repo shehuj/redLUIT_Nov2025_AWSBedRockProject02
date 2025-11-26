@@ -1,0 +1,28 @@
+# Markdownlint configuration
+# See: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+
+config:
+  # MD013 - Line length - Disable as it's too restrictive for documentation
+  MD013: false
+  
+  # MD022 - Headings should be surrounded by blank lines
+  # Relax to only require blank line above
+  MD022:
+    lines_above: 1
+    lines_below: 0
+  
+  # MD031 - Fenced code blocks should be surrounded by blank lines
+  MD031: false
+  
+  # MD032 - Lists should be surrounded by blank lines
+  MD032: false
+  
+  # MD036 - Emphasis used instead of heading - Common in docs
+  MD036: false
+  
+  # MD040 - Fenced code blocks should have a language specified
+  # Keep enabled for better syntax highlighting
+  MD040: true
+  
+  # MD041 - First line in file should be a top level heading
+  MD041: true
