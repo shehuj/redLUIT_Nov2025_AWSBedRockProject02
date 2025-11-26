@@ -10,6 +10,7 @@ permissions:
   contents: write
   id-token: write
 
+
 jobs:
   deploy-nonprod:
     name: Deploy to ${{ github.ref_name }}
@@ -27,6 +28,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          S3_prefix: ${{ github.ref_name }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
