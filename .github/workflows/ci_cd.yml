@@ -44,10 +44,28 @@ jobs:
         with:
           python-version: '3.x'
           cache: 'pip'  # cache pip dependencies for faster runs
-      
       - name: Install pre-commit
         run: pip install pre-commit
-      
+        
+      # NEW: Auto-fix markdownlint errors before running checks
+      - name: Auto-fix markdownlint errors
+        run: |
+          python3 scripts/fix_markdownlint.py || true
+        continue-on-error: true
+        
+      # NEW: Commit fixes if any were made
+      - name: Commit markdownlint fixes
+        run: |
+          git add -A
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: auto-fix markdownlint errors [skip ci]"
+            git push
+            echo "✅ Auto-fixed markdownlint errors and committed"
+          else
+            echo "ℹ️ No markdownlint fixes needed"
+          fi
+        continue-on-error: true
+        
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
       
