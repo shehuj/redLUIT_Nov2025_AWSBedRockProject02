@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket         = "ec2-shutdown-lambda-bucket"   # <--- specify actual bucket name here
-    key            = "milestone02-resume-website/terraform.tfstate"
-    region         = "us-east-1"                # <--- specify actual region here
-    encrypt        = true
-    dynamodb_table = "dyning_table"  # optional, for state locking
+    bucket         = "ec2-shutdown-lambda-bucket" # Using the bucket name from variables.tf
+    key            = "bedrock-project02/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = false
+    dynamodb_table = "dyning_table" # More descriptive name for state locking
   }
 }

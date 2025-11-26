@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "assume" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = [
+      values = [
         "repo:${var.github_repo}:ref:refs/heads/main",
         "repo:${var.github_repo}:ref:refs/heads/feature/*",
         "repo:${var.github_repo}:ref:refs/heads/beta"
@@ -26,23 +26,23 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_policy" "this" {
-  name   = "${var.role_name}-policy"
+  name = "${var.role_name}-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow",
-        Action   = [
+        Effect = "Allow",
+        Action = [
           "s3:PutObject",
           "s3:GetObject",
           "s3:ListBucket",
           "s3:CopyObject"
         ],
-        Resource = ["*"]  # you can scope this more narrowly via inputs
+        Resource = ["*"] # you can scope this more narrowly via inputs
       },
       {
-        Effect   = "Allow",
-        Action   = [
+        Effect = "Allow",
+        Action = [
           "dynamodb:PutItem",
           "dynamodb:UpdateItem"
         ],
