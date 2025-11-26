@@ -40,11 +40,11 @@ jobs:
         working-directory: ./terraform
         run: terraform fmt -check -recursive
 
-      - name: Terraform Plan
+      - name: Terraform Plan 
         working-directory: ./terraform
-        run: terraform plan -input=false
+        run: terraform plan -out=tfplan -input=false
 
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: ./terraform
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply tfplan -auto-approve -input=false
