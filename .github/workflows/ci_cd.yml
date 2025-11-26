@@ -1,0 +1,43 @@
+name: Resume Site CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "feature/*"
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ROLE_ARN: ${{ secrets.GITHUB_AWS_ROLE_ARN }}   # from terraform output
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      BUCKET_NAME: ${{ secrets.RESUME_BUCKET }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install boto3 requests  # plus your AI SDKs
+
+      - name: Generate & Deploy Resume
+        run: |
+          ENV=${{ github.event_name == 'push' && 'prod' || 'beta' }}
+          python scripts/generate_and_deploy.py --env $ENV --bucket $BUCKET_NAME
