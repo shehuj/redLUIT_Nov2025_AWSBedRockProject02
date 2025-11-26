@@ -14,11 +14,6 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
 
-    env:
-      PIP_CACHE_DIR: ~/.cache/pip
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
     environment:
       name: production
       url: https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/index.html
@@ -26,7 +21,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: hashicorp/setup-terraform@v3
+      # Step: configure AWS creds for backend & AWS calls
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: '1.9.0'
 
@@ -40,13 +44,11 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform apply "tfplan"
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          terraform apply -input=false "tfplan"
+        # no extra env needed — configure-aws-credentials above sets AWS env vars
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.14'
           cache: 'pip'
@@ -56,16 +58,9 @@ jobs:
           pip install boto3 requests
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
       - name: Generate & Deploy Resume
         run: |
           echo "🎯 Deploying to PRODUCTION"
-
           if [ -f "scripts/generate_and_deploy.py" ]; then
             python scripts/generate_and_deploy.py --env prod --bucket ${{ secrets.RESUME_BUCKET }}
           elif [ -f "terraform/scripts/generate_and_deploy.py" ]; then
