@@ -29,8 +29,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # Use default GITHUB_TOKEN — this allows git operations in workflow
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+          # Use default GITHUB_TOKEN — this allows git operations in workflow
           fetch-depth: 0  # fetch full history (useful if pre‑commit or git operations need tags/branches)
 
       - name: Setup git auth for pre-commit (if needed)
