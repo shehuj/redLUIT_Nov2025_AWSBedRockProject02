@@ -1,6 +1,10 @@
 name: Deploy (dev / beta)
 
 on:
+  pull_request:
+    branches:
+      - dev
+      - beta
   push:
     branches:
       - dev
