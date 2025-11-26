@@ -9,26 +9,27 @@ on:
 permissions:
   contents: write
   id-token: write
-  pull-requests: write
 
 jobs:
   deploy-nonprod:
     name: Deploy to ${{ github.ref_name }}
     runs-on: ubuntu-latest
-
-    env:
-      PIP_CACHE_DIR: ~/.cache/pip
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
     environment:
       name: ${{ github.ref_name }}
       url: https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.ref_name }}/index.html
-      
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.14'
           cache: 'pip'
@@ -38,17 +39,11 @@ jobs:
           pip install boto3 requests
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
       - name: Generate & Deploy Resume
         run: |
           ENV="${{ github.ref_name }}"
           echo "🎯 Deploying to environment: $ENV"
-          
+
           if [ -f "scripts/generate_and_deploy.py" ]; then
             python scripts/generate_and_deploy.py --env $ENV --bucket ${{ secrets.RESUME_BUCKET }}
           elif [ -f "terraform/scripts/generate_and_deploy.py" ]; then
