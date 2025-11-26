@@ -99,11 +99,11 @@ Do not include any explanatory text, just output the HTML."""
             
             # If it's about inference profiles, continue to next model
             if "inference profile" in error_msg.lower() or "on-demand throughput" in error_msg.lower():
-                print(f"   → Trying next model...")
+                print("   → Trying next model...")
                 continue
             # If it's model access, might need to request access
             elif "access" in error_msg.lower():
-                print(f"   ℹ️ You may need to request access to this model in AWS Console")
+                print("   ℹ️ You may need to request access to this model in AWS Console")
                 continue
             else:
                 # For other validation errors, might be worth trying next model
@@ -126,11 +126,11 @@ Do not include any explanatory text, just output the HTML."""
 
     # If we get here, all models failed
     print(f"\n❌ All models failed. Last error: {last_error}")
-    print(f"\n💡 Troubleshooting tips:")
-    print(f"   1. Check model access in AWS Console → Bedrock → Model access")
-    print(f"   2. Ensure your region supports these models")
-    print(f"   3. Try requesting access to Claude models")
-    print(f"   4. Check AWS credentials have bedrock:InvokeModel permission")
+    print("\n💡 Troubleshooting tips:")
+    print("   1. Check model access in AWS Console → Bedrock → Model access")
+    print("   2. Ensure your region supports these models")
+    print("   3. Try requesting access to Claude models")
+    print("   4. Check AWS credentials have bedrock:InvokeModel permission")
     raise last_error
 
 
@@ -202,7 +202,7 @@ def main():
 
     args = parser.parse_args()
 
-    print(f"🚀 Starting resume generation and deployment")
+    print("🚀 Starting resume generation and deployment")
     print(f"📝 Environment: {args.env}")
     print(f"🪣 Bucket: {args.bucket}")
 

@@ -1,4 +1,4 @@
-name: CI — Validate & Test
+name: CI Validate & Test
 
 on:
   pull_request:
