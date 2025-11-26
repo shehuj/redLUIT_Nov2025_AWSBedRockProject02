@@ -5,10 +5,6 @@ on:
     branches:
       - dev
       - beta
-  push:
-    branches:
-      - dev
-      - beta
 
 permissions:
   contents: write
@@ -19,9 +15,16 @@ jobs:
   deploy-nonprod:
     name: Deploy to ${{ github.ref_name }}
     runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      S3_PREFIX: ${{ github.ref_name }}
+      RESUME_BUCKET: ${{ secrets.RESUME_BUCKET }}
     environment:
       name: ${{ github.ref_name }}
-      url: https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.ref_name }}/index.html
+      url: https://${{ env.RESUME_BUCKET }}.s3.${{ env.AWS_REGION }}.amazonaws.com/${{ github.ref_name }}/index.html
 
     steps:
       - uses: actions/checkout@v4
@@ -29,9 +32,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
           S3_prefix: ${{ github.ref_name }}
 
       - name: Setup Python
