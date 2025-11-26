@@ -37,6 +37,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v3.0.1
+
       - name: Install dependencies
         run: |
           pip install boto3 requests  # plus your AI SDKs
