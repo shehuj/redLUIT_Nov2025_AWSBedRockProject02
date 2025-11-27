@@ -2,15 +2,15 @@ name: Deploy Terraform Prod
 on:
   push:
     branches:
-      - dev
-      - beta
       - main   # or prod
       # ... or other feature branches if needed
-
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
 jobs:
-  deploy-and-validate:
+  terraform:
     runs-on: ubuntu-latest
-
     env:
       PIP_CACHE_DIR: ~/.cache/pip
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
