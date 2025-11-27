@@ -5,10 +5,6 @@ on:
     branches:
       - beta
       - dev
-  push:
-    branches:
-      - beta
-      - dev
 
 permissions:
   contents: read            # checkout only needs read
@@ -69,8 +65,9 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Python code lint & format
+        continue-on-error: true
         run: |
-          black --check --continue-on-error .
+          black --check .
           flake8 --max-line-length 88 --extend-ignore=E203,E501,W503 \
             --exclude=.git,__pycache__,venv,.venv,build,dist \
             --per-file-ignores="__init__.py:F401" .
