@@ -5,10 +5,11 @@ aws_region = "us-east-1"
 
 # Example: S3 bucket for storing website / state / assets
 # (replace with your actual bucket)
-site_bucket_name = "ec2-shutdown-lambda-bucket"
+site_bucket_name = "captains-bucket01312025"
 
 # Example: prefix/key for Terraform state in S3 backend
 tfstate_key = "envs/dev/terraform.tfstate"
+tfstate_bucket = "ec2-shutdown-lambda-bucket"
 
 # Example: DynamoDB lock table name (if you use one)
 dynamodb_lock_table = "dyning_table"
