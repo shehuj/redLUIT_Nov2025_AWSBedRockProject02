@@ -55,4 +55,4 @@ jobs:
       - name: run application / script deploy
         if: github.ref == 'refs/heads/main'
         run: |
-          python scripts/generate_and_deploy.py --env prod
+          python terraform/scripts/generate_and_deploy.py --env prod
