@@ -5,11 +5,10 @@ on:
     branches:
       - dev
       - beta
-    types: [opened, reopened, synchronize]
-
 permissions:
   contents: write
   id-token: write
+
 jobs:
   deploy-nonprod:
     name: Deploy to ${{ github.head_ref }}
@@ -29,7 +28,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -65,4 +63,4 @@ jobs:
       - name: Deployment Summary
         run: |
           echo "## 🚀 Deployment to ${{ github.head_ref }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **URL:** https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.head_ref }}/index.html" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** https://${{ env.RESUME_BUCKET }}.s3.${{ env.AWS_REGION }}.amazonaws.com/${{ github.head_ref }}/index.html" >> $GITHUB_STEP_SUMMARY
