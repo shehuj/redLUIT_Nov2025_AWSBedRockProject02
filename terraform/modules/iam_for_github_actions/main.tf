@@ -39,8 +39,6 @@ resource "aws_iam_policy" "this" {
         Effect = "Allow",
         Action = [
           "s3:PutObject",
-          "s3:GetObject",
-          "s3:ListBucket",
           "s3:CopyObject",
           "bedrock:InvokeModel",
           "bedrock:ListModels",
@@ -48,9 +46,11 @@ resource "aws_iam_policy" "this" {
           "bedrock:CreateModelCustomizationJob",
           "bedrock:DescribeModelCustomizationJob",
           "bedrock:ListModelCustomizationJobs"
-          
         ],
-        Resource = ["*"] # you can scope this more narrowly via inputs
+        Resource = [
+          "arn:aws:s3:::specific-bucket-name/*", # Replace with your specific bucket ARN
+          "arn:aws:bedrock:region:account-id:model/*" # Replace with specific Bedrock model ARNs
+        ]
       },
       {
         Effect = "Allow",
