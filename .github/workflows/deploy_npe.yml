@@ -4,10 +4,6 @@ on:
     branches:
       - dev
       - beta
-
-  push:
-    branches:
-      - main
 permissions:
   contents: write
   id-token: write
