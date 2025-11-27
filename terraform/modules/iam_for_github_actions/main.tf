@@ -14,7 +14,12 @@ data "aws_iam_policy_document" "assume" {
       values = [
         "repo:${var.github_repo}:ref:refs/heads/main",
         "repo:${var.github_repo}:ref:refs/heads/feature/*",
-        "repo:${var.github_repo}:ref:refs/heads/beta"
+        "repo:${var.github_repo}:ref:refs/heads/beta",
+        "repo:${var.github_repo}:ref:refs/heads/dev",
+        "repo:${var.github_repo}:ref:refs/tags/*",
+        "repo:${var.github_repo}:environment:prod",
+        "repo:${var.github_repo}:environment:dev",
+        "repo:${var.github_repo}:environment:beta"
       ]
     }
   }
@@ -36,7 +41,14 @@ resource "aws_iam_policy" "this" {
           "s3:PutObject",
           "s3:GetObject",
           "s3:ListBucket",
-          "s3:CopyObject"
+          "s3:CopyObject",
+          "bedrock:InvokeModel",
+          "bedrock:ListModels",
+          "bedrock:DescribeModel",
+          "bedrock:CreateModelCustomizationJob",
+          "bedrock:DescribeModelCustomizationJob",
+          "bedrock:ListModelCustomizationJobs"
+          
         ],
         Resource = ["*"] # you can scope this more narrowly via inputs
       },
@@ -44,6 +56,8 @@ resource "aws_iam_policy" "this" {
         Effect = "Allow",
         Action = [
           "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:Query",
           "dynamodb:UpdateItem"
         ],
         Resource = ["*"]
@@ -55,8 +69,4 @@ resource "aws_iam_policy" "this" {
 resource "aws_iam_role_policy_attachment" "attach" {
   role       = aws_iam_role.this.name
   policy_arn = aws_iam_policy.this.arn
-}
-
-output "role_arn" {
-  value = aws_iam_role.this.arn
 }

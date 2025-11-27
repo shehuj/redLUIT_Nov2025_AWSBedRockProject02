@@ -1,45 +1,62 @@
 #!/usr/bin/env python3
 """
-Generate and deploy resume using AWS Bedrock
+Generate and deploy resume using AWS Bedrock (with inference‑profile fallback)
 """
 import argparse
 import json
 import boto3
+import botocore
 from pathlib import Path
 
-
-def call_bedrock_generate_html(resume_md, model_id=None):
+def find_inference_profile_for_model(mgmt_client, foundation_model_id_prefix, max_results=50):
     """
-    Call AWS Bedrock to generate HTML from markdown resume.
-    Uses bedrock-runtime client for model invocation.
-
-    Args:
-        resume_md: Markdown content of the resume
-        model_id: Optional model ID to use. If None, tries multiple options.
+    Return an inference‑profile ID/ARN whose model matches the given foundation‑model prefix.
+    If none found, return None.
     """
-    client = boto3.client("bedrock-runtime")
+    try:
+        resp = mgmt_client.list_inference_profiles(
+            typeEquals="SYSTEM_DEFINED",
+            maxResults=max_results
+        )
+    except botocore.exceptions.ClientError as e:
+        print("⚠️ Error listing inference profiles:", e)
+        return None
 
-    # List of model IDs to try (in order of preference)
-    # Using cross-region inference profiles for on-demand throughput
-    model_ids = [
-        # Cross-region inference profiles (recommended for on-demand)
+    for prof in resp.get("inferenceProfileSummaries", []):
+        # Try multiple identifiers
+        pid = prof.get("inferenceProfileArn") or prof.get("inferenceProfileId") or prof.get("inferenceProfileName")
+        if not pid:
+            continue
+        # Each profile has `"models"` list — check modelArn inside
+        for m in prof.get("models", []):
+            model_arn = m.get("modelArn", "")
+            if foundation_model_id_prefix in model_arn:
+                return pid
+    return None
+
+def call_bedrock_generate_html(resume_md, model_id=None, region_name=None):
+    """
+    Call Amazon Bedrock to generate HTML from markdown resume.
+    Tries foundation‑model IDs first; on failure due to throughput restrictions,
+    attempts to locate and use an inference profile.
+    """
+    runtime = boto3.client("bedrock-runtime", region_name=region_name)
+    mgmt = boto3.client("bedrock", region_name=region_name)
+
+    base_model_ids = [
         "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
         "us.anthropic.claude-3-5-sonnet-20240620-v1:0",
-
-        # Standard model IDs (may not work with on-demand in all regions)
         "anthropic.claude-3-5-sonnet-20240620-v1:0",
         "anthropic.claude-3-sonnet-20240229-v1:0",
-
-        # Haiku as fallback (faster, cheaper)
         "us.anthropic.claude-3-5-haiku-20241022-v1:0",
         "anthropic.claude-3-5-haiku-20241022-v1:0",
     ]
 
-    # If a specific model was requested, try it first
+    attempts = []
     if model_id:
-        model_ids.insert(0, model_id)
+        attempts.append(model_id)
+    attempts.extend(base_model_ids)
 
-    # Prepare the prompt
     prompt = f"""Convert the following markdown resume into a beautiful, 
 professional HTML page with CSS styling. Use modern design principles, 
 good typography, and make it mobile-responsive.
@@ -58,126 +75,94 @@ Markdown Resume:
 Generate a complete, standalone HTML document with embedded CSS. 
 Do not include any explanatory text, just output the HTML."""
 
-    # Prepare the request body for Claude model
-    body = json.dumps(
-        {
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 4096,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-        }
-    )
+    body = json.dumps({
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 4096,
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+    })
 
-    # Try each model ID until one works
     last_error = None
-    for try_model_id in model_ids:
+    for try_model in attempts:
         try:
-            print("🤖 Attempting to use model:", try_model_id)
-
-            response = client.invoke_model(
-                modelId=try_model_id,
+            print("🤖 Attempting foundation model id:", try_model)
+            response = runtime.invoke_model(
+                modelId=try_model,
                 contentType="application/json",
                 accept="application/json",
                 body=body,
             )
-
-            # Parse the response
-            response_body = json.loads(response["body"].read())
-            html_content = response_body["content"][0]["text"]
-
-            print("✅ Successfully used model:", try_model_id)
+            resp_body = json.loads(response["body"].read())
+            html_content = resp_body["content"][0]["text"]
+            print("✅ Successfully used foundation model:", try_model)
             return html_content
 
-        except client.exceptions.ValidationException as e:
-            error_msg = str(e)
-            print("⚠️ Model", try_model_id, "failed:", error_msg)
-            last_error = e
-
-            lower = error_msg.lower()
-            if "inference profile" in lower or "on-demand throughput" in lower:
-                print("   → Trying next model...")
-                continue
-            elif "access" in lower:
-                print("   ℹ️ You may need to request access to this model in AWS Console")
-                continue
-            else:
-                continue
-
-        except client.exceptions.ModelNotReadyException as e:
-            print("⚠️ Model", try_model_id, "not ready:", e)
-            last_error = e
-            continue
-
-        except client.exceptions.ThrottlingException as e:
-            print("⚠️ Throttling on", try_model_id, ":", e)
-            last_error = e
-            continue
-
         except Exception as e:
-            print("⚠️ Unexpected error with", try_model_id, ":", e)
+            err = str(e)
+            print("⚠️ Foundation model invocation failed:", err)
+            lower = err.lower()
+
+            # If failure indicates on‑demand throughput / need inference profile
+            if "on-demand throughput" in lower or "inference profile" in lower:
+                print("   ℹ️ Attempting to find inference profile for:", try_model)
+                prefix = try_model.split(":")[0]
+                profile = find_inference_profile_for_model(mgmt, prefix)
+                if profile:
+                    print("   ✅ Found inference profile:", profile)
+                    try:
+                        response = runtime.invoke_model(
+                            modelId=profile,
+                            contentType="application/json",
+                            accept="application/json",
+                            body=body,
+                        )
+                        resp_body = json.loads(response["body"].read())
+                        html_content = resp_body["content"][0]["text"]
+                        print("✅ Successfully used inference profile:", profile)
+                        return html_content
+                    except Exception as e2:
+                        print("⚠️ Inference profile invocation failed:", e2)
+                        last_error = e2
+                        continue
+                else:
+                    print("   ✖️ No matching inference profile found.")
             last_error = e
             continue
 
-    # If we get here, all models failed
-    print("\n❌ All models failed. Last error:", last_error)
+    print("\n❌ All models / profiles failed. Last error:", last_error)
     print("\n💡 Troubleshooting tips:")
-    print("   1. Check model access in AWS Console → Bedrock → Model access")
-    print("   2. Ensure your region supports these models")
-    print("   3. Try requesting access to Claude models")
-    print("   4. Check AWS credentials have bedrock:InvokeModel permission")
+    print("   1. Ensure your AWS account has model access in Bedrock → Model access.")
+    print("   2. Confirm inference profiles exist (system‑defined or application) and include desired model.")
+    print("   3. Check IAM permissions include bedrock:InvokeModel and bedrock:ListInferenceProfiles.")
+    print("   4. Ensure region_name matches a supported region for the model or inference profile.")
     raise last_error
 
-
 def upload_to_s3(html_content, bucket_name, env="prod"):
-    """
-    Upload generated HTML to S3 bucket.
-    """
     s3 = boto3.client("s3")
-
-    # Determine object key based on environment
     object_key = "index.html" if env == "prod" else f"{env}/index.html"
 
-    try:
-        print("📤 Uploading to s3://{}/{}".format(bucket_name, object_key))
+    print(f"📤 Uploading to s3://{bucket_name}/{object_key}")
+    s3.put_object(
+        Bucket=bucket_name,
+        Key=object_key,
+        Body=html_content.encode("utf-8"),
+        ContentType="text/html",
+    )
+    print("✅ Successfully uploaded to S3.")
 
-        s3.put_object(
-            Bucket=bucket_name,
-            Key=object_key,
-            Body=html_content.encode("utf-8"),
-            ContentType="text/html",
-        )
-
-        print("✅ Successfully uploaded to S3:", object_key)
-
-        # Generate URL
-        region = s3.get_bucket_location(Bucket=bucket_name)[
-            "LocationConstraint"
-        ]
-        if region is None:
-            region = "us-east-1"
-
-        url = "https://{}.s3.{}.amazonaws.com/{}".format(bucket_name, region, object_key)
-        print("🌐 Resume URL:", url)
-
-        return url
-
-    except s3.exceptions.NoSuchBucket:
-        print("❌ Bucket {} does not exist".format(bucket_name))
-        raise
-    except Exception as e:
-        print("❌ Error uploading to S3:", e)
-        raise
-
+    region = s3.get_bucket_location(Bucket=bucket_name).get("LocationConstraint")
+    if not region:
+        region = "us-east-1"
+    url = f"https://{bucket_name}.s3.{region}.amazonaws.com/{object_key}"
+    print("🌐 Resume URL:", url)
+    return url
 
 def main():
-    """Main function to orchestrate resume generation and deployment."""
-    parser = argparse.ArgumentParser(
-        description="Generate and deploy AI-powered resume"
-    )
+    parser = argparse.ArgumentParser(description="Generate and deploy AI-powered resume")
     parser.add_argument(
         "--env",
         default="prod",
@@ -195,7 +180,12 @@ def main():
     parser.add_argument(
         "--model-id",
         default=None,
-        help="Specific Bedrock model ID to use (optional)",
+        help="Specific Bedrock model ID or inference profile ID to use (optional)",
+    )
+    parser.add_argument(
+        "--region",
+        default=None,
+        help="AWS region (optional, e.g. us-east-1)",
     )
 
     args = parser.parse_args()
@@ -209,24 +199,20 @@ def main():
         print("❌ Template file not found:", args.template)
         return 1
 
-    print("📖 Reading template from:", args.template)
     with open(template_path, "r", encoding="utf-8") as f:
         resume_md = f.read()
 
-    print("✅ Loaded resume template ({} characters)".format(len(resume_md)))
+    print(f"✅ Loaded resume template ({len(resume_md)} chars)")
 
-    print("🤖 Calling AWS Bedrock to generate HTML...")
-    html = call_bedrock_generate_html(resume_md, args.model_id)
-    print("✅ Generated HTML — length:", len(html), "characters")
+    print("🤖 Calling Amazon Bedrock to generate HTML...")
+    html = call_bedrock_generate_html(resume_md, model_id=args.model_id, region_name=args.region)
+    print(f"✅ Generated HTML (length: {len(html)} chars)")
 
     print("☁️ Uploading to S3...")
-    url = upload_to_s3(html, args.bucket, args.env)
+    upload_to_s3(html, args.bucket, args.env)
 
     print("🎉 Deployment complete!")
-    print("🌐 Your resume is live at:", url)
-
     return 0
-
 
 if __name__ == "__main__":
     exit(main())
