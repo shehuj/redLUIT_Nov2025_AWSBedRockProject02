@@ -1,4 +1,4 @@
-# .github/workflows/deploy-and-validate.yml
+name: Deploy Terraform Prod
 on:
   push:
     branches:
