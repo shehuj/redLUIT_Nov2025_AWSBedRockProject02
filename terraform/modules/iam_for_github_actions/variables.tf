@@ -20,3 +20,9 @@ variable "aws_account_id" {
   type        = string
   default     = "615299732970"
 }
+
+variable "s3_bucket" {
+  description = "S3 bucket name for GitHub Actions to access"
+  type        = string
+  default     = "captains-bucket01312025"
+}

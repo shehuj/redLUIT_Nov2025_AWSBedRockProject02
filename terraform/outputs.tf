@@ -13,7 +13,3 @@ output "deployment_tracking_table_name" {
 output "resume_analytics_table_name" {
   value = module.resume_analytics_table.table_name
 }
-
-output "github_actions_role_arn" {
-  value = module.github_actions_iam.role_arn
-}
