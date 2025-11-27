@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "github_oidc_assume" {
   }
 }
 
-resource "aws_iam_role" "gh_actions_role" {
+resource "aws_iam_role" "github_actions_role" {
   name               = var.role_name
   assume_role_policy = data.aws_iam_policy_document.github_oidc_assume.json
 }
@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "bedrock_and_s3_policy" {
     ]
 
     resources = [
-      "arn:aws:s3:::${var.website_bucket_name}/*"
+      "arn:aws:s3:::${var.s3_bucket}/*"
     ]
   }
 
@@ -63,12 +63,12 @@ data "aws_iam_policy_document" "bedrock_and_s3_policy" {
   }
 }
 
-resource "aws_iam_policy" "gh_actions_permissions" {
+resource "aws_iam_policy" "github_actions_permissions" {
   name   = "${var.role_name}-permissions"
   policy = data.aws_iam_policy_document.bedrock_and_s3_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "attach_permissions" {
-  role       = aws_iam_role.gh_actions_role.name
-  policy_arn = aws_iam_policy.gh_actions_permissions.arn
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = aws_iam_policy.github_actions_permissions.arn
 }
