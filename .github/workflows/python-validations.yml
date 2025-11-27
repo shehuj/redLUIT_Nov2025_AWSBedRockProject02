@@ -5,9 +5,9 @@ name: Python validations
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev", "beta" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev", "beta" ]
 
 jobs:
   build:
