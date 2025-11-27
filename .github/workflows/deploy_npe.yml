@@ -2,7 +2,9 @@ name: Deploy (dev / beta)
 
 on:
   pull_request:
-    # no branch filter here — run on any PR
+    branches:
+      - dev
+      - beta
     types: [opened, reopened, synchronize]
 
 permissions:
