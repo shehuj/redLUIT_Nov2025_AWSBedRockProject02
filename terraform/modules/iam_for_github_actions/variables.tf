@@ -1,6 +1,7 @@
 variable "role_name" {
   description = "Name of the IAM role for GitHub Actions"
   type        = string
+  default     = "${var.github_ref}_github_actions_role"
 }
 
 variable "github_repo" {
