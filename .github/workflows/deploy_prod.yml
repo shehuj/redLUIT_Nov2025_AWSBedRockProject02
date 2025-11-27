@@ -10,6 +10,14 @@ on:
 jobs:
   deploy-and-validate:
     runs-on: ubuntu-latest
+
+    env:
+      PIP_CACHE_DIR: ~/.cache/pip
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      S3_PREFIX: ${{ github.ref_name }}
+
     needs: 
       - terraform  # optional, if you make it a dependent workflow (or you rely on sequencing manually)
     steps:

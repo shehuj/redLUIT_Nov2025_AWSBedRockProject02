@@ -11,6 +11,14 @@ env:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+
+    env:
+      PIP_CACHE_DIR: ~/.cache/pip
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      S3_PREFIX: ${{ github.ref_name }}
+
     steps:
       - name: checkout
         uses: actions/checkout@v3
