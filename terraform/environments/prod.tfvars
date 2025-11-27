@@ -8,17 +8,17 @@
 
 # ===== Global / general settings =====
 
-aws_region = "us-east-1"             # ← Change to your production AWS region
+aws_region  = "us-east-1" # ← Change to your production AWS region
 environment = "prod"
 
 # ===== S3 / Website / Static Hosting =====
 
 # Bucket for website, resume HTML, assets, etc.
-site_bucket_name = "captains-bucket01312025"   # ← Replace with your real production bucket
+site_bucket_name = "captains-bucket01312025" # ← Replace with your real production bucket
 # If you use the bucket for terraform state as well (not recommended for prod), set accordingly
-tfstate_bucket = "ec2-shutdown-lambda-bucket"   # ← optional / if you use S3 backend
-tfstate_key = "envs/prod/terraform.tfstate"         # path/key under the state bucket
-dynamodb_lock_table = "dyning_table"  # if you use DynamoDB locking
+tfstate_bucket      = "ec2-shutdown-lambda-bucket"  # ← optional / if you use S3 backend
+tfstate_key         = "envs/prod/terraform.tfstate" # path/key under the state bucket
+dynamodb_lock_table = "dyning_table"                # if you use DynamoDB locking
 
 # ===== Networking / VPC / Subnets / Security =====
 # (uncomment and fill in if your config expects these)
@@ -41,9 +41,9 @@ tags = {
 }
 
 # ===== Optional / Feature Flags =====
-enable_monitoring = true     # if you enable Prometheus / CloudWatch / logging by default
-enable_backup     = true     # if your databases/storage needs backups
-enable_ssl        = true     # if using SSL / HTTPS on website or services
+enable_monitoring = true # if you enable Prometheus / CloudWatch / logging by default
+enable_backup     = true # if your databases/storage needs backups
+enable_ssl        = true # if using SSL / HTTPS on website or services
 
 # ===== Other variables specific to your modules =====
 # ... add more as needed, e.g. database settings, lambda names, etc.
