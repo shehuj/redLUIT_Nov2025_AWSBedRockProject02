@@ -149,6 +149,7 @@ jobs:
           AWS_REGION: ${{ env.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          S3_PREFIX: ${{ env.S3_PREFIX }}
 
       - name: Upload Terraform plan
         uses: actions/upload-artifact@v4
@@ -156,3 +157,14 @@ jobs:
           name: terraform-plan-${{ github.sha }}
           path: terraform/tfplan
           retention-days: 5
+
+      - name: terraform apply 
+        if: github.event_name == 'push' && contains(github.ref, 'refs/heads/')
+        run: |
+          cd terraform
+          terraform apply -input=false "tfplan"
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          S3_PREFIX: ${{ env.S3_PREFIX }}

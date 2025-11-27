@@ -16,7 +16,7 @@ jobs:
 
     environment:
       name: production
-      url: https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/index.html
+      url: https://${{ env.RESUME_BUCKET }}.s3.${{ env.AWS_REGION }}.amazonaws.com/index.html
 
     steps:
       - uses: actions/checkout@v4
@@ -24,11 +24,7 @@ jobs:
       # Step: configure AWS creds for backend & AWS calls
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          S3_prefix: prod
+        
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
