@@ -86,5 +86,5 @@ jobs:
           python terraform/scripts/generate_and_deploy.py \
             --env prod \
             --bucket ${{ env.RESUME_BUCKET }} \
-            --s3_prefix ${{ S3_PREFIX }} \
+            --s3_prefix ${{ env.S3_PREFIX }} \
             --region ${{ env.AWS_REGION }}
