@@ -25,6 +25,10 @@ jobs:
     env:
       PIP_CACHE_DIR: ~/.cache/pip
       AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      S3_PREFIX: ${{ github.ref_name }}
+      S3_BUCKET: ${{ secrets.RESUME_BUCKET }}
 
     steps:
       - name: Checkout code
@@ -83,6 +87,7 @@ jobs:
         working-directory: ./terraform
         run: |
           terraform fmt -recursive -no-color -diff -write=true -list=true
+          terraform fmt -check -recursive
           terraform init -reconfigure
           terraform validate
 
