@@ -18,8 +18,6 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       S3_PREFIX: ${{ github.ref_name }}
 
-    needs: 
-      - terraform  # optional, if you make it a dependent workflow (or you rely on sequencing manually)
     steps:
       - name: checkout
         uses: actions/checkout@v3
