@@ -27,3 +27,14 @@ variable "s3_bucket" {
   type        = string
   default     = "captains-bucket01312025"
 }
+
+variable "environment" {
+  type        = string
+  description = "Deployment environment (e.g. dev, beta, prod)"
+}
+
+variable "role_name_prefix" {
+  type        = string
+  description = "Prefix for GitHub‑Actions IAM role name"
+  default     = "github-actions-resume-role"
+}

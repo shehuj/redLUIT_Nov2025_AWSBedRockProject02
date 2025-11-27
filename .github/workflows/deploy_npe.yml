@@ -2,6 +2,7 @@ name: Deploy Terraform NPE
 on:
   pull_request:
     branches:
+      - main
       - dev
       - beta
 permissions:
