@@ -88,7 +88,7 @@ jobs:
         run: |
           terraform fmt -recursive -no-color -diff -write=true -list=true
           terraform fmt -check -recursive
-          terraform init -reconfigure
+          terraform init -reconfigure -lock=false
           terraform validate
 
       # Terraform plan (only on PR or main push)
@@ -96,16 +96,12 @@ jobs:
         if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
         working-directory: ./terraform
         run: |
-          terraform init
-          terraform plan -no-color -out=tfplan -no-input \
+          terraform init -lock=false -reconfigure
+          terraform plan -lock=false \
             -var-file=environments/${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/beta' && 'beta' || 'dev' }}.tfvars
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ env.AWS_REGION }}
 
       # Upload plan artifact (for review / future apply)
-      - name: Upload Terraform plan
+      - name: Upload Terraform plan -lock=false
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
