@@ -19,17 +19,28 @@ jobs:
       S3_PREFIX: ${{ github.ref_name }}
 
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: run validations
-        run: |
-          cd terraform
-          terraform validate
-          terraform fmt -check -recursive
-        # optionally include tests: `terraform plan`, `terraform show`, custom linting, OPA/Checkov, etc.
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.6.0"
 
-      - name: run application / script deploy
-        run: |
-          python scripts/generate_and_deploy.py --env ${{ github.ref }}
-        # or other logic depending on env
+    - name: Terraform validate + fmt check
+      working-directory: ./terraform
+      run: |
+        terraform validate
+        terraform fmt -check -recursive
+
+    - name: run validations
+      run: |
+        cd terraform
+        terraform validate
+        terraform fmt -check -recursive
+      # optionally include tests: `terraform plan`, `terraform show`, custom linting, OPA/Checkov, etc.
+
+    - name: run application / script deploy
+      run: |
+        python scripts/generate_and_deploy.py --env ${{ github.ref }}
+      # or other logic depending on env
