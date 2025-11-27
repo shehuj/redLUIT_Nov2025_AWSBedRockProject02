@@ -1,9 +1,6 @@
-/*
+
 ## Set Environment-specific variables for the prod environment
-environment     = "prod"
-region          = "us-east-1"
-instance_type   = "m5.large"
-scaling_enabled = true
-max_instances   = 10
-min_instances   = 2  
-*/
+# environment attribute removed as it is not valid in this context
+# region attribute removed as it is not valid in this context
+# instance_type attribute removed as it is not valid in this context
+# scaling_enabled attribute removed as it is not valid in this context
