@@ -2,10 +2,6 @@
 name: Deploy Terraform Prod
 
 on:
-  pull_request:
-    branches:
-      - main 
-      
   push:
     branches:
       - main
@@ -67,7 +63,7 @@ jobs:
       - name: Terraform init
         working-directory: ./terraform
         run: |
-          terraform init -backend-config="key=resume/prod.tfstate" -input=false
+          terraform init -reconfigure
 
       - name: Terraform plan
         working-directory: ./terraform
@@ -86,5 +82,5 @@ jobs:
           python terraform/scripts/generate_and_deploy.py \
             --env prod \
             --bucket ${{ env.RESUME_BUCKET }} \
-            --s3_prefix ${{ S3_PREFIX }} \
+            --s3_prefix ${{ env.S3_PREFIX }} \
             --region ${{ env.AWS_REGION }}

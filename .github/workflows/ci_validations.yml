@@ -11,7 +11,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read            # checkout only needs read
   id-token: write
   pull-requests: write
 
@@ -22,10 +22,7 @@ jobs:
 
     env:
       PIP_CACHE_DIR: ~/.cache/pip
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      S3_PREFIX: ${{ github.ref_name }}
 
     steps:
       - name: Checkout code
@@ -33,15 +30,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.14'
+          python-version: '3.10'
           cache: 'pip'
 
       - name: Setup Terraform
@@ -49,7 +41,7 @@ jobs:
         with:
           terraform_version: '1.9.0'
 
-      - name: Install terraform-docs
+      - name: Install terraform-docs (for docs / formatting check, optional)
         run: |
           wget -q https://github.com/terraform-docs/terraform-docs/releases/download/v0.17.0/terraform-docs-v0.17.0-linux-amd64.tar.gz
           tar -xzf terraform-docs-v0.17.0-linux-amd64.tar.gz
@@ -59,13 +51,9 @@ jobs:
       - name: Install tflint
         run: |
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-          tflint --version
+          tflint --version || echo "tflint install failed"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
+      # Python lint / formatting / code quality
       - name: Cache Python dependencies
         uses: actions/cache@v4
         with:
@@ -80,88 +68,49 @@ jobs:
           pip install pre-commit black flake8 flake8-bugbear boto3 requests
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Cache pre-commit data
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-
-      - name: Run auto-fixes
-        continue-on-error: true
+      - name: Python code lint & format
         run: |
-          black --line-length 88 . || true
-          find . -name "*.py" -type f ! -path "*/venv/*" ! -path "*/.venv/*" \
-            -exec sed -i '/^import os$/d' {} + 2>/dev/null || true
-          terraform fmt -recursive || true
-          find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.yml" \
-            -o -name "*.yaml" -o -name "*.tf" \) \
-            ! -path "*/node_modules/*" ! -path "*/.venv/*" ! -path "*/venv/*" \
-            -exec sed -i 's/[[:space:]]*$//' {} + 2>/dev/null || true
-          find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.yml" \
-            -o -name "*.yaml" -o -name "*.tf" \) \
-            ! -path "*/node_modules/*" ! -path "*/.venv/*" ! -path "*/venv/*" \
-            -exec sh -c 'tail -c1 "$1" | read -r _ || echo >> "$1"' sh {} \; \
-            2>/dev/null || true
-
-      - name: Commit auto-fixes (only on push to branches, not PR events)
-        if: github.event_name == 'push'
-        run: |
-          git add -A
-          if ! git diff --staged --quiet; then
-            git commit -m "style: auto-fix linting issues [skip ci]" || true
-            git push || echo "⚠️ Could not push changes"
-          fi
-        continue-on-error: true
-
-      - name: Install pre-commit hooks
-        run: pre-commit install || true
-
-      - name: Run pre-commit
-        run: pre-commit run --all-files || true
-
-      - name: Run flake8
-        run: |
+          black --check .
           flake8 --max-line-length 88 --extend-ignore=E203,E501,W503 \
             --exclude=.git,__pycache__,venv,.venv,build,dist \
             --per-file-ignores="__init__.py:F401" .
 
-      - name: Terraform fmt-check
-        run: terraform fmt -check -recursive
-
-      - name: Terraform init
+      # Terraform formatting & static checks
+      - name: Terraform fmt-check + validate
+        working-directory: ./terraform
         run: |
-          cd terraform
-          terraform init
-
-      - name: Terraform validate
-        run: |
-          cd terraform
+          terraform fmt -check -recursive
+          terraform init -backend=false   # skip backend init for pure validation
           terraform validate
 
+      # Terraform plan (only on PR or main push)
       - name: Terraform plan
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        working-directory: ./terraform
         run: |
-          cd terraform
-          terraform plan -out=tfplan
+          terraform init
+          terraform plan -no-color -out=tfplan
         env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          S3_PREFIX: ${{ env.S3_PREFIX }}
 
+      # Upload plan artifact (for review / future apply)
       - name: Upload Terraform plan
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-${{ github.sha }}
           path: terraform/tfplan
-          retention-days: 5
+          retention-days: 7
 
-      - name: terraform apply 
-        if: github.event_name == 'push' && contains(github.ref, 'refs/heads/')
+      # Terraform apply (only on push to main)
+      - name: Terraform apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: ./terraform
         run: |
-          cd terraform
-          terraform apply -input=false "tfplan"
+          terraform apply -auto-approve tfplan
         env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          S3_PREFIX: ${{ env.S3_PREFIX }}
