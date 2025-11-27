@@ -50,7 +50,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         working-directory: ./terraform
         run: |
-          terraform apply -auto-approve -var-file=environments/${{ github.ref_name }}.tfvars
+          terraform apply -auto-approve -var-file=environments/prod.tfvars
 
       - name: run application / script deploy
         if: github.ref == 'refs/heads/main'
