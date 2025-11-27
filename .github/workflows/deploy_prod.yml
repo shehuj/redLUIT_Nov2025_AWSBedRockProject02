@@ -2,8 +2,6 @@ name: Deploy Terraform Prod
 on:
   push:
     branches:
-      - dev
-      - beta
       - main   # or prod
       # ... or other feature branches if needed
 permissions:
