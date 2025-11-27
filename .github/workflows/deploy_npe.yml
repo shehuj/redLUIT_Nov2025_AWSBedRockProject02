@@ -2,29 +2,29 @@ name: Deploy (dev / beta)
 
 on:
   pull_request:
-    branches:
-      - dev
-      - beta
+    # no branch filter here — run on any PR
+    types: [opened, reopened, synchronize]
 
 permissions:
   contents: write
   id-token: write
 
-
 jobs:
   deploy-nonprod:
-    name: Deploy to ${{ github.ref_name }}
+    name: Deploy to ${{ github.head_ref }}
     runs-on: ubuntu-latest
+
+    if: github.head_ref == 'dev' || github.head_ref == 'beta'
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      S3_PREFIX: ${{ github.ref_name }}
+      S3_PREFIX: ${{ github.head_ref }}
       RESUME_BUCKET: ${{ secrets.RESUME_BUCKET }}
     environment:
-      name: ${{ github.ref_name }}
-      url: https://${{ env.RESUME_BUCKET }}.s3.${{ env.AWS_REGION }}.amazonaws.com/${{ github.ref_name }}/index.html
+      name: ${{ github.head_ref }}
+      url: https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.head_ref }}/index.html
 
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,6 @@ jobs:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-          S3_prefix: ${{ github.ref_name }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -50,7 +49,7 @@ jobs:
 
       - name: Generate & Deploy Resume
         run: |
-          ENV="${{ github.ref_name }}"
+          ENV="${{ github.head_ref }}"
           echo "🎯 Deploying to environment: $ENV"
 
           if [ -f "scripts/generate_and_deploy.py" ]; then
@@ -64,5 +63,5 @@ jobs:
 
       - name: Deployment Summary
         run: |
-          echo "## 🚀 Deployment to ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **URL:** https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.ref_name }}/index.html" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚀 Deployment to ${{ github.head_ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.head_ref }}/index.html" >> $GITHUB_STEP_SUMMARY
