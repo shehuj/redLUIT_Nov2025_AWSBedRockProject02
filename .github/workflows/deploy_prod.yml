@@ -15,6 +15,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
   RESUME_BUCKET: ${{ secrets.RESUME_BUCKET }}
+  S3_PREFIX: prod
   TF_IN_AUTOMATION: true
 
 jobs:
@@ -42,8 +43,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
           s3-bucket: ${{ env.RESUME_BUCKET }}
 
@@ -75,4 +76,6 @@ jobs:
         run: |
           python terraform/scripts/generate_and_deploy.py \
             --env prod \
-            --bucket ${{ env.RESUME_BUCKET }}
+            --bucket ${{ env.RESUME_BUCKET }} \
+            --s3_prefix ${{ S3_PREFIX }} \
+            --region ${{ env.AWS_REGION }}
