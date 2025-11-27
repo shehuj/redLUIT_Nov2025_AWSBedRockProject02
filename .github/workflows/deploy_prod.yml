@@ -2,9 +2,13 @@
 name: Deploy Terraform Prod
 
 on:
+  pull_request:
+    branches:
+      - main 
+      
   push:
     branches:
-      - main   # you can also use "prod" if you prefer
+      - main
 
 permissions:
   id-token: write       # required for OIDC / AWS creds action
