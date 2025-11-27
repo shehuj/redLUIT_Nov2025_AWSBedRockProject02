@@ -83,7 +83,7 @@ jobs:
         working-directory: ./terraform
         run: |
           terraform fmt -check -recursive
-          terraform init -backend=false   # skip backend init for pure validation
+          terraform init -reconfigure
           terraform validate
 
       # Terraform plan (only on PR or main push)
