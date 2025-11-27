@@ -1,4 +1,4 @@
-name: Deploy (dev / beta)
+name: Deploy NPE
 
 on:
   pull_request:
@@ -52,9 +52,9 @@ jobs:
           echo "🎯 Deploying to environment: $ENV"
 
           if [ -f "scripts/generate_and_deploy.py" ]; then
-            python scripts/generate_and_deploy.py --env $ENV --bucket ${{ secrets.RESUME_BUCKET }}
+            python scripts/generate_and_deploy.py --env $ENV --bucket ${{ env.RESUME_BUCKET }}
           elif [ -f "terraform/scripts/generate_and_deploy.py" ]; then
-            python terraform/scripts/generate_and_deploy.py --env $ENV --bucket ${{ secrets.RESUME_BUCKET }}
+            python terraform/scripts/generate_and_deploy.py --env $ENV --bucket ${{ env.RESUME_BUCKET }}
           else
             echo "❌ Deployment script not found"
             exit 1

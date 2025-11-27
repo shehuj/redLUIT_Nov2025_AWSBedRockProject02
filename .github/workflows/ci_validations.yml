@@ -6,12 +6,9 @@ on:
       - main
       - beta
       - dev
-      - 'feature/*'
   push:
     branches:
       - main
-      - beta
-      - dev
 
 permissions:
   contents: write
