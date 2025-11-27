@@ -4,7 +4,6 @@ name: Deploy Terraform Prod
 on:
   pull_request:
     branches:
-      - main 
       
   push:
     branches:
