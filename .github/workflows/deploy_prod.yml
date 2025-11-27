@@ -67,7 +67,7 @@ jobs:
       - name: Terraform init
         working-directory: ./terraform
         run: |
-          terraform init -backend-config="key=resume/prod.tfstate" -input=false
+          terraform init -reconfigure
 
       - name: Terraform plan
         working-directory: ./terraform
