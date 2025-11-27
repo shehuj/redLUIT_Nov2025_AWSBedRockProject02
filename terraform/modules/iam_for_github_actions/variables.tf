@@ -1,6 +1,7 @@
 variable "role_name" {
   description = "Name of the IAM role for GitHub Actions"
   type        = string
+  default     = "redLUIT_GitHubActions_Role_"
 }
 
 variable "github_repo" {
