@@ -6,6 +6,12 @@ on:
       - beta
       - dev
 
+  push:
+    branches:
+      - main
+      - beta
+      - dev
+
 permissions:
   contents: read            # checkout only needs read
   id-token: write

@@ -19,5 +19,9 @@ module "resume_analytics_table" {
 module "github_actions_iam" {
   source      = "./modules/iam_for_github_actions"
   role_name   = "github-actions-resume-role"
+  environment = "var.environment"
+  s3_bucket   = var.bucket_name
+  aws_account_id = "615299732970"
+  region         = var.aws_region
   github_repo = var.github_repo
 }

@@ -21,3 +21,30 @@ variable "aws_account_id" {
   type        = string
   default     = "615299732970"
 }
+
+variable "environment" {
+  type        = string
+  description = "Deployment environment (e.g. dev, beta, prod)"
+}
+variable "site_bucket_name" {
+  description = "S3 bucket for website / static files"
+  type        = string
+}
+
+variable "tfstate_bucket" {
+  description = "S3 bucket for Terraform state (if using remote backend)"
+  type        = string
+  default = "ec2-shutdown-lambda-bucket"
+}
+
+variable "tfstate_key" {
+  description = "Key/path prefix for terraform state in the tfstate bucket"
+  type        = string
+}
+
+variable "dynamodb_lock_table" {
+  description = "DynamoDB table name for state locking"
+  type        = string
+  default = "dyning_table"
+  # optional default or specify in tfvars
+}
