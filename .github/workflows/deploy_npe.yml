@@ -16,29 +16,24 @@ jobs:
 
     if: github.head_ref == 'dev' || github.head_ref == 'beta'
 
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      S3_PREFIX: ${{ github.head_ref }}
-      RESUME_BUCKET: ${{ secrets.RESUME_BUCKET }}
     environment:
       name: ${{ github.head_ref }}
       url: https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.head_ref }}/index.html
 
     steps:
       - uses: actions/checkout@v4
+      
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.14'
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Install dependencies
@@ -47,14 +42,18 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Generate & Deploy Resume
+        env:
+          S3_PREFIX: ${{ github.head_ref }}
+          RESUME_BUCKET: ${{ secrets.RESUME_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           ENV="${{ github.head_ref }}"
           echo "🎯 Deploying to environment: $ENV"
 
           if [ -f "scripts/generate_and_deploy.py" ]; then
-            python scripts/generate_and_deploy.py --env $ENV --bucket ${{ env.RESUME_BUCKET }}
+            python scripts/generate_and_deploy.py --env $ENV --bucket ${{ secrets.RESUME_BUCKET }}
           elif [ -f "terraform/scripts/generate_and_deploy.py" ]; then
-            python terraform/scripts/generate_and_deploy.py --env $ENV --bucket ${{ env.RESUME_BUCKET }}
+            python terraform/scripts/generate_and_deploy.py --env $ENV --bucket ${{ secrets.RESUME_BUCKET }}
           else
             echo "❌ Deployment script not found"
             exit 1
@@ -63,4 +62,4 @@ jobs:
       - name: Deployment Summary
         run: |
           echo "## 🚀 Deployment to ${{ github.head_ref }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **URL:** https://${{ env.RESUME_BUCKET }}.s3.${{ env.AWS_REGION }}.amazonaws.com/${{ github.head_ref }}/index.html" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.head_ref }}/index.html" >> $GITHUB_STEP_SUMMARY
