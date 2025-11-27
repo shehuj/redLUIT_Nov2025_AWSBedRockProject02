@@ -1,85 +1,29 @@
-name: Deploy — Production
-
+# .github/workflows/deploy-and-validate.yml
 on:
   push:
     branches:
-      - main
-
-permissions:
-  contents: write
-  id-token: write
+      - dev
+      - beta
+      - main   # or prod
+      # ... or other feature branches if needed
 
 jobs:
-  deploy-production:
-    name: Deploy to Production
+  deploy-and-validate:
     runs-on: ubuntu-latest
-
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      S3_PREFIX: prod
-      RESUME_BUCKET: ${{ secrets.RESUME_BUCKET }}
-
-    environment:
-      name: production
-      url: https://${{ env.RESUME_BUCKET }}.s3.${{ env.AWS_REGION }}.amazonaws.com/index.html
-
+    needs: 
+      - terraform  # optional, if you make it a dependent workflow (or you rely on sequencing manually)
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v3
 
-      # Step: configure AWS creds for backend & AWS calls
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-          s3-prefix: prod
-
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: '1.9.0'
-
-      - name: Download Terraform plan
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-plan-${{ github.sha }}
-          path: terraform/
-
-      - name: Apply Terraform
+      - name: run validations
         run: |
           cd terraform
-          terraform init
-          terraform apply -input=false "tfplan"
-        # no extra env needed — configure-aws-credentials above sets AWS env vars
+          terraform validate
+          terraform fmt -check -recursive
+        # optionally include tests: `terraform plan`, `terraform show`, custom linting, OPA/Checkov, etc.
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.14'
-          cache: 'pip'
-
-      - name: Install dependencies
+      - name: run application / script deploy
         run: |
-          pip install boto3 requests
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Generate & Deploy Resume
-        run: |
-          echo "🎯 Deploying to PRODUCTION"
-          if [ -f "scripts/generate_and_deploy.py" ]; then
-            python scripts/generate_and_deploy.py --env prod --bucket ${{ secrets.RESUME_BUCKET }}
-          elif [ -f "terraform/scripts/generate_and_deploy.py" ]; then
-            python terraform/scripts/generate_and_deploy.py --env prod --bucket ${{ secrets.RESUME_BUCKET }}
-          else
-            echo "❌ Deployment script not found"
-            exit 1
-          fi
-
-      - name: Production Deployment Summary
-        run: |
-          echo "### Deployment details" >> $GITHUB_STEP_SUMMARY
-          echo "- **URL:** https://${{ secrets.RESUME_BUCKET }}.s3.${{ secrets.AWS_REGION }}.amazonaws.com/index.html" >> $GITHUB_STEP_SUMMARY
+          python scripts/generate_and_deploy.py --env ${{ github.ref }}
+        # or other logic depending on env
