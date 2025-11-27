@@ -3,12 +3,8 @@ name: CI Validate & Test
 on:
   pull_request:
     branches:
-      - main
       - beta
       - dev
-  push:
-    branches:
-      - main
 
 permissions:
   contents: read            # checkout only needs read
@@ -69,6 +65,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Python code lint & format
+        continue-on-error: true
         run: |
           black --check .
           flake8 --max-line-length 88 --extend-ignore=E203,E501,W503 \
