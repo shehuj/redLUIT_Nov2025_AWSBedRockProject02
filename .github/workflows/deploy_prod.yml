@@ -56,7 +56,7 @@ jobs:
       - name: Terraform validate + fmt check
         working-directory: ./terraform
         run: |
-          terraform init -backend-config="s3_prefix=${{ env.S3_PREFIX }}" -input=false
+          terraform init -reconfigure
           terraform fmt -recursive
           terraform fmt -check -recursive
           terraform validate
