@@ -1,46 +1,58 @@
+# .github/workflows/terraform-deploy-prod.yml
 name: Deploy Terraform Prod
+
 on:
   push:
     branches:
-      - main   # or prod
-      # ... or other feature branches if needed
+      - main   # you can also use "prod" if you prefer
+
 permissions:
-  contents: write
-  id-token: write
-  pull-requests: write
+  id-token: write       # required for OIDC / AWS creds action
+  contents: read        # checkout action needs this
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  TF_IN_AUTOMATION: true
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    env:
-      PIP_CACHE_DIR: ~/.cache/pip
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      S3_PREFIX: ${{ github.ref_name }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: "1.6.0"
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-    - name: Terraform validate + fmt check
-      working-directory: ./terraform
-      run: |
-        terraform validate
-        terraform fmt -check -recursive
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.0"
 
-    - name: run validations
-      run: |
-        cd terraform
-        terraform validate
-        terraform fmt -check -recursive
-      # optionally include tests: `terraform plan`, `terraform show`, custom linting, OPA/Checkov, etc.
+      - name: Terraform validate + fmt check
+        working-directory: ./terraform
+        run: |
+          terraform init -backend-config="region=${{ env.AWS_REGION }}" -input=false
+          terraform validate
+          terraform fmt -check -recursive
 
-    - name: run application / script deploy
-      run: |
-        python scripts/generate_and_deploy.py --env ${{ github.ref }}
-      # or other logic depending on env
+      - name: Terraform plan
+        working-directory: ./terraform
+        run: |
+          terraform plan -var-file=environments/${{ github.ref_name }}.tfvars
+
+      - name: Terraform apply (only main)
+        if: github.ref == 'refs/heads/main'
+        working-directory: ./terraform
+        run: |
+          terraform apply -auto-approve -var-file=environments/${{ github.ref_name }}.tfvars
+
+      - name: run application / script deploy
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python scripts/generate_and_deploy.py --env prod
