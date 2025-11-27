@@ -8,7 +8,7 @@ aws_region = "us-east-1"
 site_bucket_name = "captains-bucket01312025"
 
 # Example: prefix/key for Terraform state in S3 backend
-tfstate_key = "envs/dev/terraform.tfstate"
+key         = "bedrock-project02/dev/terraform.tfstate"
 tfstate_bucket = "ec2-shutdown-lambda-bucket"
 
 # Example: DynamoDB lock table name (if you use one)

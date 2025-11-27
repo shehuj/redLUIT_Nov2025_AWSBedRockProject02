@@ -17,7 +17,7 @@ environment = "prod"
 site_bucket_name = "captains-bucket01312025" # ← Replace with your real production bucket
 # If you use the bucket for terraform state as well (not recommended for prod), set accordingly
 tfstate_bucket      = "ec2-shutdown-lambda-bucket"  # ← optional / if you use S3 backend
-tfstate_key         = "envs/prod/terraform.tfstate" # path/key under the state bucket
+key         = "bedrock-project02/prod/terraform.tfstate"
 dynamodb_lock_table = "dyning_table"                # if you use DynamoDB locking
 
 # ===== Networking / VPC / Subnets / Security =====

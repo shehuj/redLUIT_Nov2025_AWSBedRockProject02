@@ -15,7 +15,7 @@ environment = "beta"
 # --- S3 / Website / Static Hosting / State (if used) ---
 site_bucket_name    = "captains-bucket01312025"     # ← Replace with your beta bucket name
 tfstate_bucket      = "ec2-shutdown-lambda-bucket"  # Optional: bucket for terraform state if separate
-tfstate_key         = "envs/beta/terraform.tfstate" # State file key prefix for this env
+key         = "bedrock-project02/beta/terraform.tfstate"
 dynamodb_lock_table = "dyning_table"                # If using DynamoDB locking backend
 
 # --- Tags / Metadata ---
