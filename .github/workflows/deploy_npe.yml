@@ -10,7 +10,6 @@ on:
 permissions:
   contents: write
   id-token: write
-
 jobs:
   deploy-nonprod:
     name: Deploy to ${{ github.head_ref }}
