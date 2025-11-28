@@ -21,12 +21,12 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: setup terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: '1.6.0'  # or your version
+          terraform_version: '1.6.0'
 
       - name: terraform init
         working-directory: ./terraform
@@ -37,7 +37,7 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: terraform apply
-        if: github.ref == 'refs/heads/beta'  # only auto-apply for beta (or include dev if you like)
+        if: github.ref == 'refs/heads/beta'
         working-directory: ./terraform
         run: terraform apply "tfplan" -auto-approve
 
