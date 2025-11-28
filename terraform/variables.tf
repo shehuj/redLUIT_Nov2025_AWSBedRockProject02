@@ -25,6 +25,7 @@ variable "aws_account_id" {
 variable "environment" {
   type        = string
   description = "Deployment environment (e.g. dev, beta, prod)"
+  default = "prod"
 }
 variable "site_bucket_name" {
   description = "S3 bucket for website / static files"
