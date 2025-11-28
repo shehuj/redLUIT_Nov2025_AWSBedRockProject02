@@ -6,7 +6,7 @@ instance_type   = "t3.medium"
 scaling_enabled = true
 max_instances   = 5
 min_instances   = 1  
-*/ # environments/beta.tfvars
+ # environments/beta.tfvars
 
 # --- Global / general settings ---
 aws_region  = "us-east-1" # Change to your target AWS region for beta
@@ -15,7 +15,7 @@ environment = "beta"
 # --- S3 / Website / Static Hosting / State (if used) ---
 site_bucket_name    = "captains-bucket01312025"     # ← Replace with your beta bucket name
 tfstate_bucket      = "ec2-shutdown-lambda-bucket"  # Optional: bucket for terraform state if separate
-tfstate_key         = "envs/beta/terraform.tfstate" # State file key prefix for this env
+key         = "bedrock-project02/beta/terraform.tfstate"
 dynamodb_lock_table = "dyning_table"                # If using DynamoDB locking backend
 
 # --- Tags / Metadata ---
@@ -39,3 +39,4 @@ enable_ssl        = false # adjust depending on staging/ssl setup
 # db_instance_class = "db.t3.micro"
 # ssh_key_name      = "beta-ssh-key"
 # extra_tags        = { "CostCenter" = "BetaTest" }
+*/

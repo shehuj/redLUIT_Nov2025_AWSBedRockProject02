@@ -32,7 +32,7 @@ jobs:
 
       - name: terraform init
         working-directory: ./terraform
-        run: terraform init -backend-config="key=resume/${{ env.TF_ENV }}.tfstate"
+        run: terraform init -backend-config="key=environmemts/dev/terraform.tfstate"
 
       - name: terraform plan
         working-directory: ./terraform
