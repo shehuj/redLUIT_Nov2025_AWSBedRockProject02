@@ -40,7 +40,7 @@ jobs:
       - name: terraform apply
         working-directory: ./terraform
         run: |
-          terraform apply "tfplan" -auto-approve
+          terraform apply "tfplan"
 
       - name: post-deploy actions
         if: github.ref == 'refs/heads/beta'
