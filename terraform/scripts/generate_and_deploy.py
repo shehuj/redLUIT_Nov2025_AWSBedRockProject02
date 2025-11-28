@@ -10,7 +10,7 @@ from pathlib import Path
 
 def find_inference_profile_for_model(mgmt_client, foundation_model_id_prefix, max_results=50):
     """
-    Return an inference‑profile ID/ARN whose model matches the given foundation‑model prefix.
+    Return an inference-profile ID/ARN whose model matches the given foundation‑model prefix.
     If none found, return None.
     """
     try:
@@ -37,7 +37,7 @@ def find_inference_profile_for_model(mgmt_client, foundation_model_id_prefix, ma
 def call_bedrock_generate_html(resume_md, model_id=None, region_name=None):
     """
     Call Amazon Bedrock to generate HTML from markdown resume.
-    Tries foundation‑model IDs first; on failure due to throughput restrictions,
+    Tries foundation-model IDs first; on failure due to throughput restrictions,
     attempts to locate and use an inference profile.
     """
     runtime = boto3.client("bedrock-runtime", region_name=region_name)
@@ -108,7 +108,7 @@ Do not include any explanatory text, just output the HTML."""
 
             # If failure indicates on‑demand throughput / need inference profile
             if "on-demand throughput" in lower or "inference profile" in lower:
-                print("   ℹ️ Attempting to find inference profile for:", try_model)
+                print(" ℹ️ Attempting to find inference profile for:", try_model)
                 prefix = try_model.split(":")[0]
                 profile = find_inference_profile_for_model(mgmt, prefix)
                 if profile:
@@ -136,7 +136,7 @@ Do not include any explanatory text, just output the HTML."""
     print("\n❌ All models / profiles failed. Last error:", last_error)
     print("\n💡 Troubleshooting tips:")
     print("   1. Ensure your AWS account has model access in Bedrock → Model access.")
-    print("   2. Confirm inference profiles exist (system‑defined or application) and include desired model.")
+    print("   2. Confirm inference profiles exist (system-defined or application) and include desired model.")
     print("   3. Check IAM permissions include bedrock:InvokeModel and bedrock:ListInferenceProfiles.")
     print("   4. Ensure region_name matches a supported region for the model or inference profile.")
     raise last_error
