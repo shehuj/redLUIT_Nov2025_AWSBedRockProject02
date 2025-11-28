@@ -35,12 +35,12 @@ jobs:
 
       - name: terraform plan
         working-directory: ./terraform
-        run: terraform plan -var-file=environments/${{ env.TF_ENV }}.tfvars
+        run: terraform plan -out=tfplan
 
       - name: terraform apply
         if: github.ref == 'refs/heads/beta'  # only auto-apply for beta (or include dev if you like)
         working-directory: ./terraform
-        run: terraform apply -auto-approve -var-file=environments/${{ env.TF_ENV }}.tfvars
+        run: terraform apply "tfplan" -auto-approve
 
       - name: run application / script deploy
         if: github.ref == 'refs/heads/main'
