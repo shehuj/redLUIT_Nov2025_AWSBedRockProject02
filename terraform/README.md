@@ -395,3 +395,30 @@ pre-commit clean
 ---
 
 **Built with ❤️ for the LUIT November 2025 Cohort**
+
+
+### Common Isuue 
+The error ResourceNotFoundException: Model use case details have not been submitted for this account indicates that your AWS account hasn't completed the required Anthropic use case form for Bedrock.
+
+Steps to Resolve
+
+1. Submit the Anthropic Use Case Form
+
+Go to AWS Bedrock Console → Model access
+Find Anthropic models in the list
+Click "Request model access" or "Modify model access"
+Fill out the Anthropic use case details form
+Wait 15+ minutes after submission for access to be granted
+
+2. Enable Model Access
+Ensure you've enabled access to the specific models you're trying to use:
+
+anthropic.claude-3-5-sonnet-20241022-v2:0
+anthropic.claude-3-sonnet-20240229-v1:0
+anthropic.claude-3-5-haiku-20241022-v1:0
+
+3. Use Inference Profiles (Recommended)
+Your script is already attempting this fallback. The inference profile ARN format should be:
+
+`us.anthropic.claude-3-5-haiku-20241022-v1:0`
+

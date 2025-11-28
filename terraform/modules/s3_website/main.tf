@@ -1,13 +1,24 @@
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
+}
 
-  versioning {
-    enabled = var.enable_versioning
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  versioning_configuration {
+    status = var.enable_versioning ? "Enabled" : "Suspended"
+  }
+}
+
+resource "aws_s3_bucket_website_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  index_document {
+    suffix = "index.html"
   }
 
-  website {
-    index_document = "index.html"
-    error_document = "error.html"
+  error_document {
+    key = "error.html"
   }
 }
 
