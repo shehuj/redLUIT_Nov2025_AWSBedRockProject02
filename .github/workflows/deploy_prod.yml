@@ -64,7 +64,7 @@ jobs:
       - name: Terraform init
         working-directory: ./terraform
         run: |
-          terraform init -reconfigure
+          terraform init -backend-config="key=environmemts/dev/terraform.tfstate"
 
       - name: Terraform plan
         working-directory: ./terraform
