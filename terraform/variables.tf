@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "bucket_name" {
   description = "S3 bucket name for resume website"
   type        = string
-  default     = "captains-bucket01312025"
+  default     = "milestone02-bedrock-website-bucket"
 }
 
 variable "github_repo" {
@@ -30,7 +30,7 @@ variable "environment" {
 variable "site_bucket_name" {
   description = "S3 bucket for website / static files"
   type        = string
-  default     = "captains-bucket01312025"
+  default     = "milestone02-bedrock-website-bucket"
 }
 
 variable "tfstate_bucket" {

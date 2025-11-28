@@ -1,7 +1,7 @@
 variable "bucket_name" {
   description = "Name of S3 bucket for website hosting"
   type        = string
-  default     = "captains-bucket01312025"
+  default     = "milestone02-bedrock-website-bucket"
 }
 
 variable "enable_versioning" {
