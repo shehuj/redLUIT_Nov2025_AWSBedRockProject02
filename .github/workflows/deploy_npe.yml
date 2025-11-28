@@ -14,12 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      TF_ENV: ${{ github.ref == 'refs/heads/beta' && 'beta' || 'dev' }}
-      PIP_CACHE_DIR: ~/.cache/pip
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      S3_PREFIX: ${{ github.ref_name }}
+      S3_PREFIX: prod
 
     steps:
       - name: checkout
@@ -32,22 +30,16 @@ jobs:
 
       - name: terraform init
         working-directory: ./terraform
-        run: terraform init
+        run: terraform init -reconfigure
 
       - name: terraform plan
         working-directory: ./terraform
-        run: terraform plan -var-file=environments/${{ env.TF_ENV }}.tfvars
+        run: terraform plan -out=tfplan
 
       - name: terraform apply
         if: github.ref == 'refs/heads/beta'  # only auto-apply for beta (or include dev if you like)
         working-directory: ./terraform
-        run: terraform apply -auto-approve -var-file=environments/${{ env.TF_ENV }}.tfvars
+        run: terraform apply "tfplan" -auto-approve
 
-      - name: run application / script deploy
-        if: github.ref == 'refs/heads/main'
-        run: |
-          python terraform/scripts/generate_and_deploy.py \
-            --env prod \
-            --bucket ${{ env.RESUME_BUCKET }} \
-            --s3_prefix ${{ env.S3_PREFIX }} \
-            --region ${{ env.AWS_REGION }}
+      - name: post-deploy actions
+        run: echo "Post-deployment steps can be added here."

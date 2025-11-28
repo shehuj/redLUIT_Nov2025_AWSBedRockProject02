@@ -25,10 +25,12 @@ variable "aws_account_id" {
 variable "environment" {
   type        = string
   description = "Deployment environment (e.g. dev, beta, prod)"
+  default = "prod"
 }
 variable "site_bucket_name" {
   description = "S3 bucket for website / static files"
   type        = string
+  default     = "captains-bucket01312025"
 }
 
 variable "tfstate_bucket" {
@@ -40,6 +42,7 @@ variable "tfstate_bucket" {
 variable "tfstate_key" {
   description = "Key/path prefix for terraform state in the tfstate bucket"
   type        = string
+  default = "bedrock-project02/prod/terraform.tfstate"
 }
 
 variable "dynamodb_lock_table" {
