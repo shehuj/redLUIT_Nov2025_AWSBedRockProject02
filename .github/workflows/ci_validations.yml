@@ -102,32 +102,3 @@ jobs:
           terraform fmt -check -recursive
           terraform init -reconfigure -lock=false
           terraform validate
-
-      # Terraform plan (on PR or push)
-      - name: Terraform plan
-        if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/') 
-        working-directory: ./terraform
-        run: |
-          terraform init -lock=false -reconfigure
-          # Select var-file based on branch
-          VARFILE="environments/$(  
-            if [[ \"${GITHUB_REF}\" == \"refs/heads/main\" ]]; then echo prod;  
-            elif [[ \"${GITHUB_REF}\" == \"refs/heads/beta\" ]]; then echo beta;  
-            else echo dev;  
-            fi  
-          ).tfvars"
-          echo "Using var-file: $VARFILE"
-          terraform plan -lock=false -var-file="$VARFILE"
-
-      # Upload plan artifact (for PRs)
-      - name: Upload Terraform plan artifact
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-plan-${{ github.sha }}
-          path: terraform/tfplan
-          retention-days: 7
-
-      - name: Clean up Terraform plan file (on push)
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')
-        run: rm -f terraform/tfplan
