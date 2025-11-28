@@ -17,6 +17,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
+      BUCKET_NAME: ${{ secrets.RESUME_BUCKET }}
       S3_PREFIX: prod
 
     steps:
@@ -37,9 +38,15 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: terraform apply
-        if: github.ref == 'refs/heads/beta'
         working-directory: ./terraform
-        run: terraform apply "tfplan" -auto-approve
+        run: |
+          terraform apply "tfplan"
 
       - name: post-deploy actions
-        run: echo "Post-deployment steps can be added here."
+        if: github.ref == 'refs/heads/beta'
+        run: |
+          python terraform/scripts/generate_and_deploy.py \
+            --env beta \
+            --bucket ${{ env.BUCKET_NAME }} \
+            --region ${{ env.AWS_REGION }}
+          
