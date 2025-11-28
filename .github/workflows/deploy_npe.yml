@@ -40,14 +40,13 @@ jobs:
       - name: terraform apply
         working-directory: ./terraform
         run: |
-          echo "Applying Terraform plan..."
           terraform apply "tfplan" -auto-approve
 
       - name: post-deploy actions
         if: github.ref == 'refs/heads/beta'
         run: |
           python terraform/scripts/generate_and_deploy.py \
-            --env npe \
+            --env beta \
             --bucket ${{ env.BUCKET_NAME }} \
             --region ${{ env.AWS_REGION }}
           
