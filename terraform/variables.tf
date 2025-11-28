@@ -30,6 +30,7 @@ variable "environment" {
 variable "site_bucket_name" {
   description = "S3 bucket for website / static files"
   type        = string
+  default     = "captains-bucket01312025"
 }
 
 variable "tfstate_bucket" {
