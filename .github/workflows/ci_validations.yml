@@ -45,15 +45,6 @@ jobs:
       - name: Install AWS SDK for Python
         run: pip install boto3
 
-      - name: Cleanup stale Terraform DynamoDB locks
-        run: |
-          python terraform/scripts/tf_unlock_stale.py \
-            --table dyning_table \
-            --age 30 \
-            --region ${{ env.AWS_REGION }} \
-            --auto-unlock || echo "No stale locks found or cleanup failed, proceeding..."
-        continue-on-error: true
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -70,15 +61,6 @@ jobs:
         run: |
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           tflint --version || echo "tflint install failed"
-
-      # Python lint / formatting / code quality
-      - name: Cache Python dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
 
       - name: Install Python dependencies
         run: |
