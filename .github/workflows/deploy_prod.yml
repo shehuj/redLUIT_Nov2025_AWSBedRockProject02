@@ -55,25 +55,6 @@ jobs:
         with:
           terraform_version: "1.6.0"
 
-      - name: Terraform validate + fmt check
-        working-directory: ./terraform
-        run: |
-          terraform init -reconfigure
-          terraform fmt -recursive
-          terraform fmt -check -recursive
-          terraform validate
-
-      - name: Terraform plan
-        working-directory: ./terraform
-        run: |
-          terraform plan -out=tfplan
-
-      - name: Terraform apply (only main)
-        if: github.ref == 'refs/heads/main'
-        working-directory: ./terraform
-        run: |
-          terraform apply "tfplan" -auto-approve
-
       - name: run application / script deploy
         if: github.ref == 'refs/heads/main'
         run: |
