@@ -1,3 +1,4 @@
+/*
 # environments/dev.tfvars
 
 # AWS region
@@ -18,8 +19,4 @@ dynamodb_lock_table = "dyning_table"
 environment = "dev"
 
 # Add other variables used in your Terraform config below:
-# e.g.
-# vpc_cidr = "10.0.0.0/16"
-# public_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
-# instance_type = "t3.medium"
-# allowed_ips = ["1.2.3.4/32"]
+*/

@@ -1,4 +1,4 @@
-
+/*
 ## Set Environment-specific variables for the prod environment
 # environment attribute removed as it is not valid in this context
 # region attribute removed as it is not valid in this context
@@ -47,3 +47,4 @@ enable_ssl        = true # if using SSL / HTTPS on website or services
 
 # ===== Other variables specific to your modules =====
 # ... add more as needed, e.g. database settings, lambda names, etc.
+*/

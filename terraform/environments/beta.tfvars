@@ -6,7 +6,7 @@ instance_type   = "t3.medium"
 scaling_enabled = true
 max_instances   = 5
 min_instances   = 1  
-*/ # environments/beta.tfvars
+ # environments/beta.tfvars
 
 # --- Global / general settings ---
 aws_region  = "us-east-1" # Change to your target AWS region for beta
@@ -39,3 +39,4 @@ enable_ssl        = false # adjust depending on staging/ssl setup
 # db_instance_class = "db.t3.micro"
 # ssh_key_name      = "beta-ssh-key"
 # extra_tags        = { "CostCenter" = "BetaTest" }
+*/
