@@ -42,6 +42,7 @@ variable "tfstate_bucket" {
 variable "tfstate_key" {
   description = "Key/path prefix for terraform state in the tfstate bucket"
   type        = string
+  default = "bedrock-project02/prod/terraform.tfstate"
 }
 
 variable "dynamodb_lock_table" {
