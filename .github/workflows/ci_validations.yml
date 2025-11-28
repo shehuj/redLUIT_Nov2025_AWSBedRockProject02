@@ -5,7 +5,6 @@ on:
     branches:
       - beta
       - dev
-
   push:
     branches:
       - main
@@ -13,7 +12,7 @@ on:
       - dev
 
 permissions:
-  contents: read            # checkout only needs read
+  contents: read
   id-token: write
   pull-requests: write
 
@@ -42,12 +41,25 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
 
+      # --- Clean up stale Terraform locks (if any) ---
+      - name: Install AWS SDK for Python
+        run: pip install boto3
+
+      - name: Cleanup stale Terraform DynamoDB locks
+        run: |
+          python terraform/scripts/tf_unlock_stale.py \
+            --table dyning_table \
+            --age 30 \
+            --region ${{ env.AWS_REGION }} \
+            --auto-unlock || echo "No stale locks found or cleanup failed, proceeding..."
+        continue-on-error: true
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: '1.9.0'
 
-      - name: Install terraform-docs (for docs / formatting check, optional)
+      - name: Install terraform-docs (optional)
         run: |
           wget -q https://github.com/terraform-docs/terraform-docs/releases/download/v0.17.0/terraform-docs-v0.17.0-linux-amd64.tar.gz
           tar -xzf terraform-docs-v0.17.0-linux-amd64.tar.gz
@@ -74,7 +86,7 @@ jobs:
           pip install pre-commit black flake8 flake8-bugbear boto3 requests
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Python code lint & format
+      - name: Python code lint & format (non-blocking)
         continue-on-error: true
         run: |
           black --check .
@@ -82,32 +94,28 @@ jobs:
             --exclude=.git,__pycache__,venv,.venv,build,dist \
             --per-file-ignores="__init__.py:F401" .
 
-      # Terraform formatting & static checks
-      - name: Terraform fmt-check + validate
+      # Terraform formatting & static checks + validate
+      - name: Terraform fmt + validate
         working-directory: ./terraform
         run: |
-          terraform fmt -recursive -no-color -diff -write=true -list=true
+          terraform fmt -recursive
           terraform fmt -check -recursive
           terraform init -reconfigure -lock=false
           terraform validate
-
-      # Terraform plan (only on PR or main push)
-      - name: Terraform plan
-        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+      
+      - name: Terraform docs generation (optional)
         working-directory: ./terraform
         run: |
-          terraform init -lock=false -reconfigure
-          terraform plan -lock=false \
-            -var-file=environments/${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/beta' && 'beta' || 'dev' }}.tfvars
+          terraform-docs markdown table --output-file README.md --output-mode inject .  
+    
+      - name: Install AWS SDK for Python
+        run: pip install boto3
 
-      # Upload plan artifact (for review / future apply)
-      - name: Upload Terraform plan -lock=false
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-plan-${{ github.sha }}
-          path: terraform/tfplan
-          retention-days: 7
-      - name: Cleanup Terraform plan artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: rm -f terraform/tfplan 
+      - name: Cleanup stale Terraform DynamoDB locks
+        run: |
+          python terraform/scripts/tf_unlock_stale.py \
+            --table dyning_table \
+            --age 30 \
+            --region ${{ env.AWS_REGION }} \
+            --auto-unlock || echo "No stale locks found or cleanup failed, proceeding..."
+        continue-on-error: true

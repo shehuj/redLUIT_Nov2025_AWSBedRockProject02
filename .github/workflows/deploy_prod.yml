@@ -48,6 +48,8 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           s3-bucket: ${{ env.RESUME_BUCKET }}
 
+      - name: Install AWS SDK for Python
+        run: pip install boto3
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -64,7 +66,7 @@ jobs:
       - name: Terraform init
         working-directory: ./terraform
         run: |
-          terraform init -reconfigure
+          terraform init -backend-config="key=environmemts/dev/terraform.tfstate"
 
       - name: Terraform plan
         working-directory: ./terraform
