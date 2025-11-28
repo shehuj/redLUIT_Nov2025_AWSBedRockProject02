@@ -1,80 +1,126 @@
-# redLUIT_Nov2025_AWSBedRockProject02
-ATS friendly resume with AWS bedrock
+# AWS Bedrock AI-Powered Resume Generator & Deployment System
 
-├── terraform/          ← root Terraform module  
-│     ├── backend.tf      ← remote state config  
-│     ├── environments/   ← environment-specific configs (beta, prod)  
-│     │     ├── beta.tfvars  
-│     │     └── prod.tfvars  
-│     ├── main.tf       ← calls lower-level modules  
-│     ├── variables.tf  
-│     ├── outputs.tf  
-│     └── README.md  
-├── modules/                     ← reusable Terraform modules  
-│     ├── s3_website/            ← module for S3 website bucket  
-│     │     ├── main.tf  
-│     │     ├── variables.tf  
-│     │     ├── outputs.tf  
-│     │     └── README.md  
-│     ├── dynamodb_table/        ← module for a DynamoDB table  
-│     │     ├── main.tf  
-│     │     ├── variables.tf  
-│     │     ├── outputs.tf  
-│     │     └── README.md  
-│     └── iam_for_github_actions/ ← module for IAM role + policy for GitHub Actions  
-│           ├── main.tf  
-│           ├── variables.tf  
-│           ├── outputs.tf  
-│           └── README.md  
-├── scripts/  
-│     └── generate_and_deploy.py  ← Python script (AI + deploy logic)  
-├── resume_template.md  
-├── .github/  
-│     └── workflows/  
-│           └── ci_cd.yml   ← GitHub Actions CI/CD workflow  
-└── README.md
+[![Deploy Terraform Prod](https://github.com/shehuj/redLUIT_Nov2025_AWSBedRockProject02/actions/workflows/deploy_prod.yml/badge.svg)](https://github.com/shehuj/redLUIT_Nov2025_AWSBedRockProject02/actions/workflows/deploy_prod.yml)
+[![Deploy Terraform NPE](https://github.com/shehuj/redLUIT_Nov2025_AWSBedRockProject02/actions/workflows/deploy_npe.yml/badge.svg)](https://github.com/shehuj/redLUIT_Nov2025_AWSBedRockProject02/actions/workflows/deploy_npe.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# AWS Bedrock Resume Generator & Deployment Project
+An intelligent, fully automated resume generation and deployment system that leverages AWS Bedrock's Claude AI models to transform markdown resumes into beautiful, ATS-friendly HTML websites. Built with infrastructure-as-code principles using Terraform and automated via GitHub Actions CI/CD pipelines.
 
-[![CI/CD](https://github.com/shehuj/redLUIT_Nov2025_AWSBedRockProject02/actions/workflows/resume-ci-cd.yml/badge.svg)](https://github.com/shehuj/redLUIT_Nov2025_AWSBedRockProject02/actions)
-
-An automated resume generation and deployment system leveraging AWS Bedrock AI models, Python, and Terraform infrastructure as code. Part of the Level Up In Tech (LUIT) November 2025 cohort project.
+**Part of the Level Up In Tech (LUIT) November 2025 Cohort - AWS Bedrock Project 02**
 
 ## 🚀 Project Overview
 
-This project demonstrates a complete CI/CD pipeline that:
-- Generates personalized resumes using AWS Bedrock AI models
-- Deploys resume websites to AWS S3 with static hosting
-- Manages infrastructure using Terraform modules
-- Automates deployment through GitHub Actions
-- Implements security best practices with IAM roles and OIDC authentication
+This project showcases a production-ready, enterprise-grade CI/CD pipeline that:
 
-## 🏗️ Architecture
+- **AI-Powered Generation**: Utilizes AWS Bedrock Claude 3.5 Sonnet/Haiku models with intelligent fallback to inference profiles for optimal availability
+- **Static Website Hosting**: Automatically deploys generated HTML resumes to S3 with public website configuration
+- **Infrastructure as Code**: Complete Terraform implementation with reusable, modular architecture
+- **Multi-Environment Support**: Separate workflows for production (`main` branch) and non-production environments (`beta`, `dev` branches)
+- **Deployment Tracking**: DynamoDB tables for tracking deployments and analytics
+- **Security Best Practices**:
+  - IAM roles with least-privilege policies
+  - Encrypted Terraform state with S3 backend
+  - State locking with DynamoDB
+  - GitHub Actions OIDC authentication
+  - Secure secret management
+
+## 🏗️ System Architecture
 
 ```
-┌─────────────────┐
-│  GitHub Actions │
-│   (CI/CD)       │
-└────────┬────────┘
-         │
-         ├─── Terraform ───┐
-         │                 │
-         ├─── Python ──────┤
-         │                 │
-         ▼                 ▼
-┌─────────────────┐  ┌──────────────┐
-│   AWS Bedrock   │  │ Terraform    │
-│   (AI Models)   │  │ Infrastructure│
-└─────────────────┘  └──────┬───────┘
-                            │
-         ┌──────────────────┼──────────────────┐
-         │                  │                  │
-         ▼                  ▼                  ▼
-    ┌────────┐         ┌─────────┐      ┌──────────┐
-    │   S3   │         │   IAM   │      │ DynamoDB │
-    │ Bucket │         │  Roles  │      │  Table   │
-    └────────┘         └─────────┘      └──────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                        GitHub Repository                          │
+│  ┌────────────────┐    ┌──────────────────┐                     │
+│  │ resume_       │    │ terraform/       │                     │
+│  │ template.md   │    │ modules/         │                     │
+│  └────────────────┘    └──────────────────┘                     │
+└───────────────┬──────────────────┬───────────────────────────────┘
+                │                  │
+        Push to main/beta     Pull Request
+                │                  │
+                ▼                  ▼
+    ┌─────────────────────────────────────────┐
+    │      GitHub Actions Workflows           │
+    │  ┌──────────────┐  ┌─────────────────┐ │
+    │  │ deploy_prod  │  │  deploy_npe     │ │
+    │  │ (main)       │  │  (beta/dev)     │ │
+    │  └──────┬───────┘  └────────┬────────┘ │
+    └─────────┼──────────────────┬─┼──────────┘
+              │                  │ │
+              ▼                  ▼ ▼
+    ┌──────────────────┐   ┌────────────────┐
+    │  AWS Credentials │   │  Terraform     │
+    │  (Secrets/OIDC)  │   │  Init/Plan     │
+    └──────────────────┘   └────────┬───────┘
+                                    │
+                   ┌────────────────┼────────────────┐
+                   │                │                │
+                   ▼                ▼                ▼
+         ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+         │ S3 Module    │  │ DynamoDB     │  │ IAM Module   │
+         │ (Website)    │  │ Module (x2)  │  │ (GH Actions) │
+         └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+                │                 │                  │
+                ▼                 ▼                  ▼
+         ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+         │  S3 Bucket   │  │  DynamoDB    │  │  IAM Role    │
+         │  + Website   │  │  Tables:     │  │  + Policy    │
+         │  Config      │  │  - Tracking  │  │              │
+         │              │  │  - Analytics │  │              │
+         └──────────────┘  └──────────────┘  └──────────────┘
+                │
+                ▼
+    ┌────────────────────────────┐
+    │ generate_and_deploy.py     │
+    │                            │
+    │ 1. Read resume_template.md │
+    │ 2. Call Bedrock API        │
+    │ 3. Upload HTML to S3       │
+    └───────────┬────────────────┘
+                │
+                ▼
+    ┌────────────────────────────┐
+    │    AWS Bedrock Runtime     │
+    │  ┌──────────────────────┐  │
+    │  │ Try Foundation Model:│  │
+    │  │ - Claude 3.5 Sonnet  │  │
+    │  │ - Claude 3.5 Haiku   │  │
+    │  │ - Claude 3 Sonnet    │  │
+    │  └──────────────────────┘  │
+    │           │ Fallback        │
+    │           ▼                 │
+    │  ┌──────────────────────┐  │
+    │  │ Inference Profile    │  │
+    │  │ (Auto-discovered)    │  │
+    │  └──────────────────────┘  │
+    └────────────┬───────────────┘
+                 │
+                 ▼ (HTML Content)
+    ┌────────────────────────────┐
+    │    S3 Bucket (Website)     │
+    │    index.html / {env}/     │
+    │    Public Read Access      │
+    └────────────┬───────────────┘
+                 │
+                 ▼
+         📄 Live Resume Website
+            (S3 Website Endpoint)
 ```
+
+### Architecture Highlights
+
+1. **Dual Workflow Strategy**:
+   - `deploy_prod.yml`: Triggered on push to `main` - deploys to production
+   - `deploy_npe.yml`: Triggered on PR to `main`/`beta`/`dev` - validates and deploys to test environments
+
+2. **Intelligent AI Model Selection**:
+   - Attempts multiple Claude models in priority order
+   - Automatic fallback to inference profiles if foundation models hit throughput limits
+   - Dynamic profile discovery via Bedrock management API
+
+3. **Terraform State Management**:
+   - Remote backend in S3 (`ec2-shutdown-lambda-bucket`)
+   - State locking via DynamoDB (`dyning_table`)
+   - Encrypted at rest for security
 
 ## 📋 Features
 
