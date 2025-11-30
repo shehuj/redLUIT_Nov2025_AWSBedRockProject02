@@ -22,14 +22,12 @@ dynamodb_lock_table = "dyning_table"
 # ============================================================================
 
 # Custom Domain for CloudFront
-# Note: Set to empty to deploy without custom domain (use CloudFront default URL)
-# After ACM certificate is issued, uncomment and add certificate ARN below
-custom_domain = ""
+custom_domain = "shehuj.com"
 
-# ACM Certificate ARN
-# Note: Required when using custom_domain
-# Step 1: Request certificate, Step 2: Validate via DNS, Step 3: Add ARN here
-acm_certificate_arn = ""
+# ACM Certificate ARN (ISSUED and ready to use)
+# Certificate validated via Route53 DNS
+# Domain: shehuj.com
+acm_certificate_arn = "arn:aws:acm:us-east-1:615299732970:certificate/a945df0b-6ad5-4de5-a1ed-a9a04cdaea62"
 
 # ============================================================================
 # CLOUDFRONT CONFIGURATION
