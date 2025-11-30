@@ -1,4 +1,4 @@
-# Terraform Configuration for www.jenom.com
+# Terraform Configuration for shehuj.com
 
 # AWS Configuration
 aws_region     = "us-east-1"
@@ -22,11 +22,12 @@ dynamodb_lock_table = "dyning_table"
 # ============================================================================
 
 # Custom Domain for CloudFront
-custom_domain = "www.jenom.com"
+custom_domain = "shehuj.com"
 
-# ACM Certificate ARN (NEWLY CREATED - WAITING FOR DNS VALIDATION)
-# Certificate created: 2025-11-30
-acm_certificate_arn = "arn:aws:acm:us-east-1:615299732970:certificate/b3c357ad-2711-42f8-9190-bff6a42fd45a"
+# ACM Certificate ARN
+# Note: Certificate will be requested for shehuj.com
+# Leave empty to use CloudFront default certificate (*.cloudfront.net)
+acm_certificate_arn = ""
 
 # ============================================================================
 # CLOUDFRONT CONFIGURATION

@@ -1,20 +1,18 @@
-# Route53 Configuration for www.jenom.com
+# Route53 Configuration for shehuj.com
 # This file configures DNS records for the custom domain
 
-# Get the existing Route53 hosted zone for www.jenom.com
-# Note: This is a subdomain hosted zone (www.jenom.com) not an apex domain
-data "aws_route53_zone" "jenom" {
-  name         = "www.jenom.com"
+# Get the existing Route53 hosted zone for shehuj.com
+data "aws_route53_zone" "primary" {
+  name         = "shehuj.com"
   private_zone = false
 }
 
 # A Record (IPv4) - Alias to CloudFront Distribution
-# This is the primary DNS record that points www.jenom.com to CloudFront
-# Since the hosted zone is for www.jenom.com, we use the zone apex (empty name)
-resource "aws_route53_record" "www" {
+# This points shehuj.com to CloudFront
+resource "aws_route53_record" "apex" {
   count   = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
-  zone_id = data.aws_route53_zone.jenom.zone_id
-  name    = data.aws_route53_zone.jenom.name
+  zone_id = data.aws_route53_zone.primary.zone_id
+  name    = var.custom_domain
   type    = "A"
 
   alias {
@@ -26,11 +24,10 @@ resource "aws_route53_record" "www" {
 
 # AAAA Record (IPv6) - Alias to CloudFront Distribution
 # This provides IPv6 support for the website
-# Since the hosted zone is for www.jenom.com, we use the zone apex (empty name)
-resource "aws_route53_record" "www_ipv6" {
+resource "aws_route53_record" "apex_ipv6" {
   count   = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
-  zone_id = data.aws_route53_zone.jenom.zone_id
-  name    = data.aws_route53_zone.jenom.name
+  zone_id = data.aws_route53_zone.primary.zone_id
+  name    = var.custom_domain
   type    = "AAAA"
 
   alias {
@@ -40,16 +37,17 @@ resource "aws_route53_record" "www_ipv6" {
   }
 }
 
-# Optional: Apex domain redirect (jenom.com -> www.jenom.com)
-# Uncomment if you want to redirect the root domain to www
-# resource "aws_route53_record" "apex" {
-#   zone_id = data.aws_route53_zone.jenom.zone_id
-#   name    = "jenom.com"
+# Optional: WWW subdomain (www.shehuj.com)
+# Uncomment if you want to support www subdomain as well
+# resource "aws_route53_record" "www" {
+#   count   = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
+#   zone_id = data.aws_route53_zone.primary.zone_id
+#   name    = "www.${var.custom_domain}"
 #   type    = "A"
 #
 #   alias {
-#     name                   = module.cloudfront[0].cloudfront_domain_name
-#     zone_id                = module.cloudfront[0].cloudfront_hosted_zone_id
+#     name                   = module.cloudfront[0].distribution_domain_name
+#     zone_id                = module.cloudfront[0].distribution_hosted_zone_id
 #     evaluate_target_health = false
 #   }
 # }

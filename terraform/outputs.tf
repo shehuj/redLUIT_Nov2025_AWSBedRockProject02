@@ -35,13 +35,13 @@ output "resume_analytics_table_name" {
 
 # Route53 DNS Outputs
 output "route53_zone_id" {
-  description = "Route53 hosted zone ID for jenom.com"
-  value       = var.custom_domain != "" ? data.aws_route53_zone.jenom.zone_id : "No custom domain configured"
+  description = "Route53 hosted zone ID for custom domain"
+  value       = var.custom_domain != "" ? data.aws_route53_zone.primary.zone_id : "No custom domain configured"
 }
 
 output "route53_zone_name" {
   description = "Route53 hosted zone name"
-  value       = var.custom_domain != "" ? data.aws_route53_zone.jenom.name : "No custom domain configured"
+  value       = var.custom_domain != "" ? data.aws_route53_zone.primary.name : "No custom domain configured"
 }
 
 output "custom_domain_url" {
