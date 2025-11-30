@@ -1,5 +1,14 @@
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
+
+  tags = merge(
+    {
+      Name      = var.bucket_name
+      ManagedBy = "Terraform"
+      Access    = "CloudFront-Only"
+    },
+    var.tags
+  )
 }
 
 resource "aws_s3_bucket_versioning" "this" {
@@ -25,26 +34,11 @@ resource "aws_s3_bucket_website_configuration" "this" {
 resource "aws_s3_bucket_public_access_block" "public_access" {
   bucket = aws_s3_bucket.this.id
 
-  # Allow bucket policy to grant public read
-  block_public_acls       = false
+  # Block all public access - CloudFront OAC will handle access
+  block_public_acls       = true
   ignore_public_acls      = true
-  block_public_policy     = false # must allow policies
-  restrict_public_buckets = false # allow bucket policy
+  block_public_policy     = true
+  restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_policy" "public_read_policy" {
-  bucket = aws_s3_bucket.this.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Sid       = "PublicReadGetObject",
-        Effect    = "Allow",
-        Principal = "*",
-        Action    = "s3:GetObject",
-        Resource  = "arn:aws:s3:::${aws_s3_bucket.this.id}/*"
-      }
-    ]
-  })
-}
+# No public bucket policy - CloudFront module will create the OAC policy

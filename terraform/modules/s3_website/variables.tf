@@ -1,35 +1,16 @@
 variable "bucket_name" {
-  description = "Name of S3 bucket for website hosting"
+  description = "Name of the S3 bucket (CloudFront OAC access only)"
   type        = string
-  default     = "milestone02-bedrock-website-bucket"
 }
 
 variable "enable_versioning" {
-  description = "Enable versioning on bucket"
+  description = "Enable versioning on the S3 bucket"
   type        = bool
   default     = true
 }
 
-variable "public_read" {
-  description = "Whether bucket objects should be publicly readable"
-  type        = bool
-  default     = true
-}
-
-variable "website_index_document" {
-  description = "Index document for the website"
-  type        = string
-  default     = "index.html"
-}
-
-variable "website_error_document" {
-  description = "Error document for the website"
-  type        = string
-  default     = "error.html"
-}
-
-variable "region" {
-  description = "AWS region for the S3 bucket"
-  type        = string
-  default     = "us-east-1"
+variable "tags" {
+  description = "Tags to apply to S3 bucket resources"
+  type        = map(string)
+  default     = {}
 }

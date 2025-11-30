@@ -1,7 +1,11 @@
 module "site_bucket" {
   source      = "./modules/s3_website"
   bucket_name = var.bucket_name
-  public_read = var.enable_cloudfront ? false : true # Only public if CloudFront is disabled
+
+  tags = {
+    Project     = "Resume-Generator"
+    Environment = var.environment
+  }
 }
 
 module "cloudfront" {
