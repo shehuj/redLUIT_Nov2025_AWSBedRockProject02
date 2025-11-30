@@ -1145,10 +1145,53 @@ Current implementation status:
 | **Pre-commit Hooks** | ✅ Complete | Terraform, Python, Markdown linting |
 | **Multi-Environment** | ✅ Complete | Support for prod, beta, dev |
 | **Error Handling** | ✅ Complete | Robust fallback and troubleshooting |
-| **CloudFront CDN** | 🚧 Future | Optional enhancement for performance |
-| **Custom Domain** | 🚧 Future | Route53 + ACM integration |
+| **CloudFront CDN** | ✅ Complete | HTTPS with OAC for secure S3 access |
+| **Custom Domain** | ✅ Complete | ACM certificates + DNS configuration |
 | **CloudWatch Monitoring** | 🚧 Future | Metrics and alarms |
 | **Cost Optimization** | 🚧 Future | S3 lifecycle policies, reserved capacity |
+
+## 📖 Additional Documentation
+
+This repository includes comprehensive guides for various deployment scenarios:
+
+### CloudFront & Custom Domain Setup
+- **[CUSTOM_DOMAIN_SETUP.md](CUSTOM_DOMAIN_SETUP.md)** - Complete guide for setting up custom domain (www.jenom.com) with CloudFront, including ACM certificate setup, DNS configuration, and troubleshooting
+- **[DEPLOY_JENOM_COM.md](DEPLOY_JENOM_COM.md)** - Quick start deployment guide with step-by-step instructions for www.jenom.com
+- **[DNS_CONFIGURATION_JENOM.md](DNS_CONFIGURATION_JENOM.md)** - DNS provider-specific instructions (GoDaddy, Namecheap, Route53, Cloudflare, etc.)
+
+### CloudFront Integration
+- **[CLOUDFRONT_ONLY_ACCESS.md](CLOUDFRONT_ONLY_ACCESS.md)** - Documentation for CloudFront-only access model, security benefits, and migration from public S3
+- **[CLOUDFRONT_SETUP.md](CLOUDFRONT_SETUP.md)** - CloudFront module documentation and configuration options
+- **[CLOUDFRONT_SUMMARY.md](CLOUDFRONT_SUMMARY.md)** - Quick reference for CloudFront features and benefits
+
+### Infrastructure Documentation
+- **[terraform/README.md](terraform/README.md)** - Quick reference for Terraform deployment and module usage
+- **[terraform/modules/s3_website/README.md](terraform/modules/s3_website/README.md)** - S3 website module documentation
+- **[terraform/modules/cloudfront/README.md](terraform/modules/cloudfront/README.md)** - CloudFront module documentation
+
+### Security Model
+
+The infrastructure enforces **CloudFront-only access** with the following security layers:
+
+```
+┌─────────────────────────────────────────┐
+│         Access Control Matrix            │
+├─────────────────────────────────────────┤
+│ Direct S3 HTTP Access:      ❌ BLOCKED  │
+│ Direct S3 HTTPS Access:     ❌ BLOCKED  │
+│ Public Bucket Policy:       ❌ REMOVED  │
+│ Public ACLs:                ❌ BLOCKED  │
+│ CloudFront OAC Access:      ✅ ALLOWED  │
+└─────────────────────────────────────────┘
+```
+
+**Benefits:**
+- ✅ HTTPS-only access (TLS 1.2+)
+- ✅ Global CDN with 400+ edge locations
+- ✅ ~90% cost reduction vs direct S3
+- ✅ Compliance ready (PCI DSS, HIPAA, SOC 2, GDPR)
+- ✅ DDoS protection with AWS Shield Standard
+- ✅ Optional WAF integration
 
 ## 📝 License
 

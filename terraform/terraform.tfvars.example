@@ -1,0 +1,116 @@
+# Terraform Configuration for Custom Domain: www.jenom.com
+# Copy this file to terraform.tfvars and update with your values
+
+# AWS Configuration
+aws_region     = "us-east-1"
+aws_account_id = "615299732970"
+environment    = "prod"
+
+# S3 Bucket Configuration
+bucket_name      = "milestone02-bedrock-website-bucket"
+site_bucket_name = "milestone02-bedrock-website-bucket"
+
+# GitHub Actions OIDC Configuration
+github_repo = "redLUIT/redLUIT_Nov2025_AWSBedRockProject02"
+
+# Terraform State Backend
+tfstate_bucket       = "ec2-shutdown-lambda-bucket"
+tfstate_key          = "bedrock-project02/prod/terraform.tfstate"
+dynamodb_lock_table  = "dyning_table"
+
+# ============================================================================
+# CUSTOM DOMAIN CONFIGURATION
+# ============================================================================
+
+# Custom Domain for CloudFront
+# IMPORTANT: After requesting ACM certificate, replace the ARN below
+custom_domain = "www.jenom.com"
+
+# ACM Certificate ARN (MUST be in us-east-1 for CloudFront)
+# Steps to get certificate ARN:
+# 1. Request certificate in ACM (us-east-1):
+#    aws acm request-certificate --domain-name www.jenom.com --validation-method DNS --region us-east-1
+# 2. Add DNS validation CNAME record to your DNS provider
+# 3. Wait for certificate status to become "ISSUED"
+# 4. Copy ARN and paste below
+acm_certificate_arn = ""  # Example: "arn:aws:acm:us-east-1:615299732970:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+
+# ============================================================================
+# CLOUDFRONT CONFIGURATION
+# ============================================================================
+
+# CloudFront is REQUIRED (S3 bucket is private - CloudFront-only access)
+enable_cloudfront = true
+
+# CloudFront Price Class
+# - PriceClass_All: All edge locations (best performance, highest cost)
+# - PriceClass_200: Most edge locations (excludes most expensive regions)
+# - PriceClass_100: US, Canada, Europe, Israel (lowest cost)
+cloudfront_price_class = "PriceClass_100"
+
+# Geographic Restrictions
+# - "none": No restrictions (worldwide access)
+# - "whitelist": Allow only specified countries
+# - "blacklist": Block specified countries
+geo_restriction_type = "none"
+
+# Country codes (ISO 3166-1 alpha-2) for geo restrictions
+# Examples: ["US", "CA", "GB", "DE", "FR"]
+geo_restriction_locations = []
+
+# ============================================================================
+# CLOUDFRONT LOGGING (Optional)
+# ============================================================================
+
+# Enable CloudFront access logging
+enable_cloudfront_logging = false
+
+# S3 bucket for CloudFront logs (leave empty if logging disabled)
+# NOTE: Bucket must exist and have proper permissions
+# cloudfront_logging_bucket = "my-cloudfront-logs-bucket.s3.amazonaws.com"
+cloudfront_logging_bucket = ""
+
+# Prefix for log files
+cloudfront_logging_prefix = "cloudfront-logs/"
+
+# ============================================================================
+# WAF CONFIGURATION (Optional)
+# ============================================================================
+
+# AWS WAF Web ACL ID for CloudFront (leave empty to disable)
+# Provides DDoS protection, rate limiting, and security rules
+# Cost: ~$5/month base + $1/million requests
+web_acl_id = ""
+
+# ============================================================================
+# NOTES
+# ============================================================================
+
+# 1. ACM Certificate Setup:
+#    - Certificate MUST be in us-east-1 region for CloudFront
+#    - Use DNS validation (recommended) or email validation
+#    - Add DNS validation CNAME to your DNS provider
+#    - Wait 5-30 minutes for validation to complete
+#
+# 2. DNS Configuration:
+#    - Create CNAME record: www.jenom.com → d1234567890abc.cloudfront.net
+#    - Or use Route53 Alias record (recommended, no DNS query charges)
+#    - DNS propagation can take up to 48 hours (usually < 30 mins)
+#
+# 3. Deployment:
+#    - Run: terraform init
+#    - Run: terraform validate
+#    - Run: terraform plan
+#    - Run: terraform apply
+#    - CloudFront deployment takes 15-30 minutes
+#
+# 4. Testing:
+#    - Wait for DNS propagation: dig www.jenom.com
+#    - Test HTTPS: curl -I https://www.jenom.com
+#    - Verify SSL certificate in browser (green lock icon)
+#
+# 5. Content Upload:
+#    - Upload to S3: aws s3 cp index.html s3://milestone02-bedrock-website-bucket/
+#    - Invalidate CloudFront: aws cloudfront create-invalidation --distribution-id E123 --paths "/*"
+#
+# 6. For detailed setup instructions, see: CUSTOM_DOMAIN_SETUP.md
