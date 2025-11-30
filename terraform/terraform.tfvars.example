@@ -1,4 +1,4 @@
-# Terraform Configuration for Custom Domain: www.jenom.com
+# Terraform Configuration for Custom Domain: shehuj.com
 # Copy this file to terraform.tfvars and update with your values
 
 # AWS Configuration
@@ -24,12 +24,12 @@ dynamodb_lock_table  = "dyning_table"
 
 # Custom Domain for CloudFront
 # IMPORTANT: After requesting ACM certificate, replace the ARN below
-custom_domain = "www.jenom.com"
+custom_domain = "shehuj.com"
 
 # ACM Certificate ARN (MUST be in us-east-1 for CloudFront)
 # Steps to get certificate ARN:
 # 1. Request certificate in ACM (us-east-1):
-#    aws acm request-certificate --domain-name www.jenom.com --validation-method DNS --region us-east-1
+#    aws acm request-certificate --domain-name shehuj.com --validation-method DNS --region us-east-1
 # 2. Add DNS validation CNAME record to your DNS provider
 # 3. Wait for certificate status to become "ISSUED"
 # 4. Copy ARN and paste below
@@ -93,8 +93,8 @@ web_acl_id = ""
 #    - Wait 5-30 minutes for validation to complete
 #
 # 2. DNS Configuration:
-#    - Create CNAME record: www.jenom.com → d1234567890abc.cloudfront.net
-#    - Or use Route53 Alias record (recommended, no DNS query charges)
+#    - Create A record: shehuj.com → CloudFront distribution (Alias)
+#    - Or use CNAME: shehuj.com → d1234567890abc.cloudfront.net
 #    - DNS propagation can take up to 48 hours (usually < 30 mins)
 #
 # 3. Deployment:
@@ -105,8 +105,8 @@ web_acl_id = ""
 #    - CloudFront deployment takes 15-30 minutes
 #
 # 4. Testing:
-#    - Wait for DNS propagation: dig www.jenom.com
-#    - Test HTTPS: curl -I https://www.jenom.com
+#    - Wait for DNS propagation: dig shehuj.com
+#    - Test HTTPS: curl -I https://shehuj.com
 #    - Verify SSL certificate in browser (green lock icon)
 #
 # 5. Content Upload:

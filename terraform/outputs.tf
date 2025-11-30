@@ -32,3 +32,27 @@ output "resume_analytics_table_name" {
   description = "DynamoDB resume analytics table name"
   value       = module.resume_analytics_table.table_name
 }
+
+# Route53 DNS Outputs
+output "route53_zone_id" {
+  description = "Route53 hosted zone ID for custom domain"
+  value       = var.custom_domain != "" ? data.aws_route53_zone.primary.zone_id : "No custom domain configured"
+}
+
+output "route53_zone_name" {
+  description = "Route53 hosted zone name"
+  value       = var.custom_domain != "" ? data.aws_route53_zone.primary.name : "No custom domain configured"
+}
+
+output "custom_domain_url" {
+  description = "Custom domain URL (HTTPS)"
+  value       = var.custom_domain != "" ? "https://${var.custom_domain}" : "No custom domain configured"
+}
+
+output "dns_records_created" {
+  description = "DNS records created for custom domain"
+  value = var.enable_cloudfront && var.custom_domain != "" ? {
+    a_record    = "${var.custom_domain} -> ${module.cloudfront[0].distribution_domain_name} (IPv4)"
+    aaaa_record = "${var.custom_domain} -> ${module.cloudfront[0].distribution_domain_name} (IPv6)"
+  } : {}
+}
