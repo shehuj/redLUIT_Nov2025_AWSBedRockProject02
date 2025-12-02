@@ -26,8 +26,8 @@ custom_domain = "shehuj.com"
 
 # ACM Certificate ARN (ISSUED and ready to use)
 # Certificate validated via Route53 DNS
-# Domain: shehuj.com
-acm_certificate_arn = "arn:aws:acm:us-east-1:615299732970:certificate/a945df0b-6ad5-4de5-a1ed-a9a04cdaea62"
+# Domains: shehuj.com, www.shehuj.com
+acm_certificate_arn = "arn:aws:acm:us-east-1:615299732970:certificate/05fc4a8f-4f89-4503-bb90-5f094efdb6ea"
 
 # ============================================================================
 # CLOUDFRONT CONFIGURATION

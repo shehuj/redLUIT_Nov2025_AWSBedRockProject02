@@ -37,17 +37,30 @@ resource "aws_route53_record" "apex_ipv6" {
   }
 }
 
-# Optional: WWW subdomain (www.shehuj.com)
-# Uncomment if you want to support www subdomain as well
-# resource "aws_route53_record" "www" {
-#   count   = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
-#   zone_id = data.aws_route53_zone.primary.zone_id
-#   name    = "www.${var.custom_domain}"
-#   type    = "A"
-#
-#   alias {
-#     name                   = module.cloudfront[0].distribution_domain_name
-#     zone_id                = module.cloudfront[0].distribution_hosted_zone_id
-#     evaluate_target_health = false
-#   }
-# }
+# WWW subdomain (www.shehuj.com) - IPv4
+resource "aws_route53_record" "www" {
+  count   = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
+  zone_id = data.aws_route53_zone.primary.zone_id
+  name    = "www.${var.custom_domain}"
+  type    = "A"
+
+  alias {
+    name                   = module.cloudfront[0].distribution_domain_name
+    zone_id                = module.cloudfront[0].distribution_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+# WWW subdomain (www.shehuj.com) - IPv6
+resource "aws_route53_record" "www_ipv6" {
+  count   = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
+  zone_id = data.aws_route53_zone.primary.zone_id
+  name    = "www.${var.custom_domain}"
+  type    = "AAAA"
+
+  alias {
+    name                   = module.cloudfront[0].distribution_domain_name
+    zone_id                = module.cloudfront[0].distribution_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
