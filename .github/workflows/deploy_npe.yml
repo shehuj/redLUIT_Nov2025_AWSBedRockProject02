@@ -24,6 +24,36 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - name: Install jq (for JSON parsing)
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Cleanup existing CloudFront OAC if present
+        id: cleanup_oac
+        run: |
+          TARGET_NAME="www.shehuj.com-oac"
+          echo "Listing existing CloudFront Origin Access Controls..."
+          existing_ids=$(aws cloudfront list-origin-access-controls --query "Items[?Name=='$TARGET_NAME'].Id" --output text)
+          if [ -n "$existing_ids" ] && [ "$existing_ids" != "None" ]; then
+            for oac_id in $existing_ids; do
+              echo "Found existing OAC with ID $oac_id — deleting..."
+              etag=$(aws cloudfront get-origin-access-control --id "$oac_id" --query 'ETag' --output text)
+              aws cloudfront delete-origin-access-control --id "$oac_id" --if-match "$etag"
+              echo "Deletion requested for OAC $oac_id"
+            done
+            echo "Waiting for OAC $TARGET_NAME to disappear..."
+            for i in {1..12}; do
+              count=$(aws cloudfront list-origin-access-controls --query "length(Items[?Name=='$TARGET_NAME'])" --output text)
+              if [ "$count" = "0" ]; then
+                echo "OAC removed"
+                break
+              fi
+              echo "Still exists ($count), sleeping 5s..."
+              sleep 5
+            done
+          else
+            echo "No existing OAC named $TARGET_NAME"
+          fi
+
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -31,16 +61,15 @@ jobs:
 
       - name: terraform init
         working-directory: ./terraform
-        run: terraform init -reconfigure
-
+        run: terraform init -reconfigure 
       - name: terraform plan
         working-directory: ./terraform
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplanit
 
       - name: terraform apply
         working-directory: ./terraform
         run: |
-          terraform apply "tfplan"
+          terraform apply "tfplanit"
 
       - name: post-deploy actions
         if: github.ref == 'refs/heads/beta'

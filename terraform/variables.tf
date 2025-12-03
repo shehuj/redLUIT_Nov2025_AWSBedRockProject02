@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "bucket_name" {
   description = "S3 bucket name for resume website"
   type        = string
-  default     = "milestone02-bedrock-website-bucket"
+  default     = "www.shehuj.com"
 }
 
 variable "github_repo" {

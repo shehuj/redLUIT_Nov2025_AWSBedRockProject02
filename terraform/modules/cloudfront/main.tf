@@ -17,7 +17,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   comment             = "CloudFront distribution for ${var.bucket_name}"
   default_root_object = "index.html"
   price_class         = var.price_class
-  aliases             = var.custom_domain != "" ? [var.custom_domain] : []
+  aliases             = var.custom_domain != "" ? [var.custom_domain, "www.${var.custom_domain}"] : []
 
   # Origin configuration
   origin {
