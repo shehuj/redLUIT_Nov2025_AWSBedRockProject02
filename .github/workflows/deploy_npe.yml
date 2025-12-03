@@ -31,12 +31,10 @@ jobs:
 
       - name: terraform init
         working-directory: ./terraform
-        run: terraform init -reconfigure
-
-        
-      - name: Import existing CloudFront OAC
-        run: |
-          terraform import module.cloudfront["0"].aws_cloudfront_origin_access_control.s3_oac 
+        run: terraform init -reconfigure       
+#      - name: Import existing CloudFront OAC
+#        run: |
+#          terraform import module.cloudfront["0"].aws_cloudfront_origin_access_control.s3_oac 
       - name: terraform plan
         working-directory: ./terraform
         run: terraform plan -out=tfplan
