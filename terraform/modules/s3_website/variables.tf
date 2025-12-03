@@ -1,6 +1,7 @@
 variable "bucket_name" {
   description = "Name of the S3 bucket (CloudFront OAC access only)"
   type        = string
+  default = "www.shehuj.com"
 }
 
 variable "enable_versioning" {
