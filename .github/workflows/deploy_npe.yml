@@ -64,12 +64,12 @@ jobs:
         run: terraform init -reconfigure 
       - name: terraform plan
         working-directory: ./terraform
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplanit
 
       - name: terraform apply
         working-directory: ./terraform
         run: |
-          terraform apply "tfplan"
+          terraform apply "tfplanit"
 
       - name: post-deploy actions
         if: github.ref == 'refs/heads/beta'
