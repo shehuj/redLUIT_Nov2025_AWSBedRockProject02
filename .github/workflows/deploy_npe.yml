@@ -24,15 +24,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: setup terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: '1.6.0'
-
-      - name: terraform init
-        working-directory: ./terraform
-        run: terraform init -reconfigure 
-        
       - name: Install jq (for JSON parsing)
         run: sudo apt-get update && sudo apt-get install -y jq
 
@@ -62,6 +53,15 @@ jobs:
           else
             echo "No existing OAC named $TARGET_NAME"
           fi
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.6.0'
+
+      - name: terraform init
+        working-directory: ./terraform
+        run: terraform init -reconfigure 
       - name: terraform plan
         working-directory: ./terraform
         run: terraform plan -out=tfplan
