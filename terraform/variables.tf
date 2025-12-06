@@ -57,11 +57,6 @@ variable "enable_cloudfront" {
   description = "Enable CloudFront distribution (REQUIRED for access - S3 bucket is private)"
   type        = bool
   default     = true
-
-  validation {
-    condition     = var.enable_cloudfront == true
-    error_message = "CloudFront must be enabled. S3 bucket is private and only accessible via CloudFront Origin Access Control (OAC)."
-  }
 }
 
 variable "cloudfront_price_class" {
