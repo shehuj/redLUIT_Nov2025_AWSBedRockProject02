@@ -1,24 +1,24 @@
-# Shehu J. Captain
-**Senior DevOps Engineer | Site Reliability Engineer**
+# Shehu J.P
+**Senior Software Engineer - DevOps/SRE**
 
-📧 shehujcaptain@gmail.com | 📱 +1 (555) 123-4567 | 📍 Seattle, WA
-🔗 [LinkedIn](https://linkedin.com/in/shehuj) | 💻 [GitHub](https://github.com/shehuj) | 🌐 [Portfolio](https://shehuj.dev)
+📧 shehuj35@gmail.com | 📱 +1 (904) 570 8374 | 📍 Dallas Metroplex, TX
+🔗 [LinkedIn](https://linkedin.com/in/jenom-shehu) | 💻 [GitHub](https://github.com/shehuj) | 🌐 [Portfolio](https://medium.com/  🌐 [credly](https://www.credly.com/users/jenom-shehu/edit#credly)
 
 ---
 
 ## PROFESSIONAL SUMMARY
 
-Results-driven **DevOps/Site Reliability Engineer** with **8+ years** of experience architecting, implementing, and maintaining highly scalable cloud infrastructure and CI/CD pipelines. Proven expertise in designing fault-tolerant systems on **AWS** and **GCP**, with deep knowledge of **Infrastructure as Code** using Terraform and CloudFormation.
+Results-driven **DevOps/Site Reliability Engineer** with **9+ years** of experience architecting, implementing, and maintaining highly scalable cloud infrastructure and CI/CD pipelines. Proven expertise in designing fault-tolerant systems on **AWS** and **GCP**, with deep knowledge of **Infrastructure as Code** using Terraform and CloudFormation.
 
 **Core Competencies:**
 - Cloud-native infrastructure design with **99.9%+ uptime** for mission-critical services
 - CI/CD pipeline optimization reducing deployment time by **75%**
 - Container orchestration using **Kubernetes**, Docker, and Helm
-- Comprehensive observability with Prometheus, Grafana, and ELK Stack
-- Infrastructure automation and configuration management
+- Comprehensive observability with CloudWatch, Prometheus, Grafana, and ELK Stack
+- Infrastructure automation and configuration management with Terraform and Ansible
 - Security best practices: IAM, RBAC, encryption, and compliance frameworks
 
-Passionate about implementing **SRE principles** to bridge development and operations through automation, observability, and continuous improvement. Seeking to leverage cloud-native expertise and problem-solving skills to drive infrastructure excellence.
+Passionate about implementing **SRE principles** to bridge development and operations through automation, observability, and continuous improvement. Seeking to leverage cloud-native expertise and problem-solving skills to drive infrastructure and Operational excellence.
 
 ---
 
@@ -26,16 +26,16 @@ Passionate about implementing **SRE principles** to bridge development and opera
 
 ### Cloud & Infrastructure
 - **Cloud Platforms:** AWS (EC2, S3, ECS, EKS, Lambda, RDS, DynamoDB, CloudFormation), Google Cloud Platform (GCE, GKE, Cloud Storage)
-- **Infrastructure as Code:** Terraform, AWS CloudFormation, AWS CDK, Pulumi
-- **Container & Orchestration:** Docker, Kubernetes, Helm, Amazon ECS, Amazon ECR, JFrog Artifactory
+- **Infrastructure as Code:** Terraform, AWS CloudFormation, AWS CDK, Ansible.
+- **Container & Orchestration:** Docker/Docker Compose, Kubernetes, Helm, Amazon ECS, Amazon ECR, JFrog Artifactory, Rancher
 
 ### CI/CD & Automation
 - **CI/CD Tools:** Jenkins, GitHub Actions, Harness, AWS CodePipeline, GitLab CI/CD
-- **Configuration Management:** Ansible, Salt Stack, AWS Systems Manager (SSM)
+- **Configuration Management:** Ansible, SaltStack, AWS Systems Manager (SSM)
 - **Scripting & Programming:** Python (Boto3), Bash, Groovy, Go
 
 ### Monitoring & Observability
-- **Monitoring Solutions:** Prometheus, Grafana, CloudWatch, Datadog, New Relic
+- **Monitoring Solutions:** Prometheus, Grafana, CloudWatch, New Relic, Splunk.
 - **Logging & SIEM:** ELK Stack (Elasticsearch, Logstash, Kibana), Splunk, Loki
 - **APM Tools:** Dynatrace, AppDynamics, New Relic APM
 
@@ -46,20 +46,20 @@ Passionate about implementing **SRE principles** to bridge development and opera
 
 ### Security & Compliance
 - **Security Tools:** AWS IAM, Security Groups, NACLs, HashiCorp Vault, AWS KMS
-- **Certificate Management:** AWS ACM, Venafi, Let's Encrypt
-- **Vulnerability Scanning:** Snyk, SonarQube, JFrog Xray
+- **Certificate Management:** AWS ACM, Venafi, LetsEncrypt
+- **Vulnerability Scanning:** Snyk, CheckMarx, SonarQube, JFrog Xray
 
 ### Collaboration & Documentation
 - **Project Management:** Jira, Confluence, Monday.com
 - **Version Control:** Git, GitHub, GitLab, Bitbucket
-- **Incident Management:** PagerDuty, xMatters, Opsgenie
+- **Incident Management:** PagerDuty, xMatters.
 
 ---
 
 ## PROFESSIONAL EXPERIENCE
 
-### Microsoft Corporation, Redmond, WA
-**Senior Software Engineer (DevOps/SRE) | January 2022 – Present**
+### GlobalLogic Inc. Sants Clara, CA
+**Senior Software Engineer (DevOps/SRE) | July 2025 – Present**
 
 **Leadership & Development:**
 - Lead end-to-end software development lifecycle for enterprise-scale strategic initiatives, mentoring 5+ junior engineers
@@ -81,21 +81,21 @@ Passionate about implementing **SRE principles** to bridge development and opera
 - Champion DevOps excellence through implementation of automated testing frameworks and robust CI/CD pipelines
 - Conduct R&D for strategic platform enhancements and proof-of-concept initiatives
 
-### Amazon Web Services (AWS), Seattle, WA
-**DevOps Engineer – Contract | March 2021 – December 2021**
+### Dun and Bradstreet, Jacksonville, FL.
+**Sr. Cloud Engineer (DevOps/SRE) – FTE | November 2022 – May 2025**
 
 **CI/CD & Pipeline Engineering:**
 - Architected enterprise-grade CI/CD pipelines using **Jenkins** and **Kubernetes**, achieving **70% reduction** in deployment time
-- Enabled weekly release cycles supporting 50+ microservices with **99.95% deployment success rate**
+- Enabled Bi-weekly release cycles supporting 50+ microservices with **99.95% deployment success rate**
 - Implemented blue-green and canary deployment strategies for zero-downtime releases
 
 **Cloud Infrastructure:**
-- Engineered infrastructure-as-code solutions using **Terraform** and **CloudFormation** for auto-scaling AWS/GCP environments
+- Engineered infrastructure-as-code solutions using **Terraform** and **CloudFormation** for auto-scaling AWS environments
 - Provisioned and managed 500+ EC2 instances with comprehensive monitoring coverage exceeding **90%**
-- Reduced infrastructure costs by **30%** through cloud migration and optimization initiatives
+- Reduced infrastructure costs by **30%** through cloud migration and optimization initiatives.
 
 **Observability & Incident Management:**
-- Implemented full-stack observability platforms (Prometheus, Grafana, ELK) reducing **MTTR by 40%**
+- Implemented full-stack observability platforms (Prometheus, Grafana, CloudWatch) reducing **MTTR by 40%**
 - Lead 24/7 incident response initiatives, establishing SLO/SLI frameworks and developing comprehensive runbooks
 - Ensured **99.95% service availability** through proactive monitoring and automated incident detection
 
@@ -103,8 +103,8 @@ Passionate about implementing **SRE principles** to bridge development and opera
 - Designed PostgreSQL multi-region replication strategy using **AWS RDS** with read replicas ensuring **< 1 second replication lag**
 - Implemented automated backup and recovery procedures using pg_dump and AWS Backup achieving **15-minute RPO**
 
-### Capital One, McLean, VA
-**Senior Site Reliability Engineer | June 2018 – February 2021**
+### HouseHappy, PortLand, OR
+**Senior DevOps Engineer - Contract | June 2022 – August 2022**
 
 **CI/CD Excellence:**
 - Architected secure CI/CD pipeline using **Jenkins**, reducing deployment time from **2 hours to 30 minutes**
@@ -132,8 +132,8 @@ Passionate about implementing **SRE principles** to bridge development and opera
 - Maintained 24/7 on-call rotation addressing security vulnerabilities ensuring **99.9% system availability**
 - Containerized legacy applications using Docker with JFrog Xray vulnerability scanning
 
-### Cisco Systems, San Jose, CA
-**Senior DevOps/SRE | August 2016 – May 2018**
+### Pilot Thomas Logistics, Fort Worth, TX
+**Senior Cloud Support Engineer -  | August 2019 – May 2022**
 
 **Cloud Automation & Deployment:**
 - Designed scalable task queues using **AWS SQS** and **Lambda Functions** with Python scripts, reducing manual intervention by **80%**
@@ -155,8 +155,16 @@ Passionate about implementing **SRE principles** to bridge development and opera
 - Deployed comprehensive observability tools (Prometheus, Splunk, Dynatrace) with security alerting features
 - Maintained horizontal system scalability including security configurations and troubleshooting workflows
 
-### IBM Cloud, Austin, TX
-**Cloud Support Engineer – Contract | January 2015 – July 2016**
+### US NAVY, GreatLakes, Chicago
+**Aviation Machinist | June 2019 – August 2019**
+
+**Cloud Automation & Deployment:**
+- Designed scalable task queues using **AWS SQS** and **Lambda Functions** with Python scripts, reducing manual intervention by **80%**
+- Automated cloud deployments using **Ansible**, **Python (Boto3)**, and **AWS CloudFormation** for consistent infrastructure provisioning
+- Led complete project lifecycle on AWS including automation, scalability, build processes, testing, and production deployments
+
+### Henry Schein, Jacksonville, FL
+**Cloud Engineer – Contract | January 2015 – July 2019**
 
 **Release Management:**
 - Orchestrated bi-weekly production releases with **zero-downtime deployments** achieving **98% successful deployment rate**
@@ -172,19 +180,6 @@ Passionate about implementing **SRE principles** to bridge development and opera
 - Monitored system performance metrics identifying optimization opportunities improving tool efficiency by **40%**
 - Diagnosed complex cloud infrastructure issues maintaining **99.5% service availability**
 - Spearheaded process optimization initiatives reducing MTTR by **35%**
-
-### Tech Startup Inc., Austin, TX
-**Systems Administrator/Cloud Engineer | May 2013 – December 2014**
-
-**Linux Infrastructure:**
-- Administered mission-critical Linux server infrastructure achieving **99.9% uptime SLA**
-- Developed comprehensive Bash automation scripts reducing manual effort by **70%**
-- Maintained optimal performance for business-critical applications serving 50K+ users
-
-**Monitoring & Collaboration:**
-- Architected enterprise monitoring solution using **Prometheus**, **Grafana**, and **Loki** providing real-time visibility
-- Partnered with development and IT teams facilitating seamless application deployments achieving zero-downtime migrations
-- Maintained SRE on-call rotation using PagerDuty reducing incident response time to **under 15 minutes**
 
 ---
 
@@ -234,16 +229,6 @@ Ahmadu Bello University, Zaria, Nigeria | Graduated: 2011
 
 **Diploma in Aviation and Airspace Management**
 Dean International Inc., Miami, FL | Completed: 2016
-
----
-
-## CERTIFICATIONS
-
-- **AWS Certified Solutions Architect – Associate** (Valid through 2026)
-- **AWS Certified Cloud Practitioner** (Valid through 2025)
-- **Google Cloud Certified – Professional Cloud Engineer** (Valid through 2026)
-- **Certified Kubernetes Administrator (CKA)** – In Progress
-- **HashiCorp Certified: Terraform Associate** – Planned for 2025
 
 ---
 
