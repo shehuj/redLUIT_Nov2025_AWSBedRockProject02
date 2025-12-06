@@ -57,8 +57,8 @@ aws_account_id = "615299732970"
 environment    = "prod"
 
 # S3 Bucket Configuration
-bucket_name      = "milestone02-bedrock-website-bucket"
-site_bucket_name = "milestone02-bedrock-website-bucket"
+bucket_name      = "www.shehuj.com"
+site_bucket_name = "www.shehuj.com"
 
 # GitHub Actions OIDC Configuration
 github_repo = "shehuj/redLUIT_Nov2025_AWSBedRockProject02"
@@ -77,8 +77,8 @@ custom_domain = "shehuj.com"
 
 # ACM Certificate ARN (ISSUED and ready to use)
 # Certificate validated via Route53 DNS
-# Domain: shehuj.com
-acm_certificate_arn = "arn:aws:acm:us-east-1:615299732970:certificate/a945df0b-6ad5-4de5-a1ed-a9a04cdaea62"
+# Domain: shehuj.com and *.shehuj.com
+acm_certificate_arn = "arn:aws:acm:us-east-1:615299732970:certificate/ef43e943-82a6-4cfb-a7de-bb913a7e9b88"
 
 # ============================================================================
 # CLOUDFRONT CONFIGURATION

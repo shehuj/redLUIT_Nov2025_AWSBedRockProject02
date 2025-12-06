@@ -10,10 +10,11 @@ data "aws_route53_zone" "primary" {
 # A Record (IPv4) - Alias to CloudFront Distribution
 # This points shehuj.com to CloudFront
 resource "aws_route53_record" "apex" {
-  count   = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
-  zone_id = data.aws_route53_zone.primary.zone_id
-  name    = var.custom_domain
-  type    = "A"
+  count           = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
+  zone_id         = data.aws_route53_zone.primary.zone_id
+  name            = var.custom_domain
+  type            = "A"
+  allow_overwrite = true
 
   alias {
     name                   = module.cloudfront[0].distribution_domain_name
@@ -25,10 +26,11 @@ resource "aws_route53_record" "apex" {
 # AAAA Record (IPv6) - Alias to CloudFront Distribution
 # This provides IPv6 support for the website
 resource "aws_route53_record" "apex_ipv6" {
-  count   = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
-  zone_id = data.aws_route53_zone.primary.zone_id
-  name    = var.custom_domain
-  type    = "AAAA"
+  count           = var.enable_cloudfront && var.custom_domain != "" ? 1 : 0
+  zone_id         = data.aws_route53_zone.primary.zone_id
+  name            = var.custom_domain
+  type            = "AAAA"
+  allow_overwrite = true
 
   alias {
     name                   = module.cloudfront[0].distribution_domain_name
