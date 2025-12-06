@@ -2,7 +2,7 @@
 **Senior Software Engineer - DevOps/SRE**
 
 📧 shehuj35@gmail.com | 📱 +1 (904) 570 8374 | 📍 Dallas Metroplex, TX
-🔗 [LinkedIn](https://linkedin.com/in/jenom-shehu) | 💻 [GitHub](https://github.com/shehuj) | 🌐 [Portfolio](https://medium.com/  🌐 [credly](https://www.credly.com/users/jenom-shehu/edit#credly)
+🔗 [LinkedIn](https://linkedin.com/in/jenom-shehu) | 💻 [GitHub](https://github.com/shehuj) | 🌐 [Portfolio](https://medium.com/  🌐 [Credly](https://www.credly.com/users/jenom-shehu/edit#credly)
 
 ---
 
