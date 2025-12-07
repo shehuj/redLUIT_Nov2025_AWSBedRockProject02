@@ -6,6 +6,11 @@ name: Python validations
 on:
   pull_request:
     branches: [ "main", "dev", "beta" ]
+    paths:
+      - '**/*.py'
+      - 'requirements.txt'
+      - 'tests/**'
+      - '.github/workflows/python-validations.yml'
 
 jobs:
   build:

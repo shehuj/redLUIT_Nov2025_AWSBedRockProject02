@@ -5,11 +5,25 @@ on:
     branches:
       - beta
       - dev
+    paths:
+      - 'terraform/**'
+      - '**/*.py'
+      - 'requirements.txt'
+      - '.pre-commit-config.yaml'
+      - '.flake8'
+      - '.github/workflows/ci_validations.yml'
   push:
     branches:
       - main
       - beta
       - dev
+    paths:
+      - 'terraform/**'
+      - '**/*.py'
+      - 'requirements.txt'
+      - '.pre-commit-config.yaml'
+      - '.flake8'
+      - '.github/workflows/ci_validations.yml'
 
 permissions:
   contents: read
