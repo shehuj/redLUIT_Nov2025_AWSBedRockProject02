@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'resume_template.md'
+      - 'terraform/scripts/**'
+      - 'terraform/**/*.tf'
+      - 'requirements.txt'
+      - '.github/workflows/deploy_prod.yml'
 
 permissions:
   id-token: write       # required for OIDC / AWS creds action
